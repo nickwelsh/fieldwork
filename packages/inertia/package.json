@@ -1,0 +1,43 @@
+{
+    "name": "@fieldwork/inertia",
+    "version": "0.1.0",
+    "license": "MIT",
+    "files": [
+        "dist"
+    ],
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./generator": {
+            "types": "./dist/generator.d.ts",
+            "import": "./dist/generator.js"
+        },
+        "./effect": {
+            "types": "./dist/effect.d.ts",
+            "import": "./dist/effect.js"
+        }
+    },
+    "scripts": {
+        "build": "vp pack"
+    },
+    "dependencies": {
+        "@fieldwork/core": "workspace:*",
+        "effect": "4.0.2"
+    },
+    "devDependencies": {
+        "@fieldwork/generator": "workspace:*",
+        "@inertiajs/core": "file:vendor/inertia-core-effect-18db6eba25c95837.tgz"
+    },
+    "peerDependencies": {
+        "@fieldwork/generator": "^0.1.0",
+        "@inertiajs/core": "^3.7.1"
+    },
+    "peerDependenciesMeta": {
+        "@fieldwork/generator": {
+            "optional": true
+        }
+    }
+}

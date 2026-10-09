@@ -1,0 +1,41 @@
+name: Check
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+          coverage: none
+      - run: npm install --global vite-plus@0.3.0
+      - run: vp install --frozen-lockfile
+      - run: composer install --working-dir=packages/laravel --no-interaction --prefer-dist
+      - run: vp check
+      - run: vp exec tsc --noEmit
+      - run: vp test run
+      - run: vp run build
+      - run: node packages/generator/dist/cli.js generate --config examples/react/fieldwork.config.ts --check
+  php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+          coverage: none
+      - run: composer install --working-dir=packages/laravel --no-interaction --prefer-dist
+      - run: composer --working-dir=packages/laravel test
+      - run: php packages/laravel/vendor/bin/phpstan analyse --configuration=packages/laravel/phpstan.neon --memory-limit=1G
+      - run: php packages/laravel/vendor/bin/pint --test packages/laravel/src packages/laravel/tests examples/react/php

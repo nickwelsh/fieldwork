@@ -1,0 +1,73 @@
+{
+    "environment": {
+        "timestamp": "2026-10-08",
+        "browser": "Codex in-app browser",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+        "production": true,
+        "strictMode": false
+    },
+    "methodology": {
+        "warmupEdits": 30,
+        "measuredEdits": 300,
+        "allInputsMounted": true,
+        "paintingIncluded": false,
+        "mode": "synchronous workload",
+        "note": "Observed input counts matched each sample size. These in-app browser measurements are separate from the earlier standalone headless Chromium run."
+    },
+    "samples": [
+        {
+            "fieldCount": 1000,
+            "mode": "synchronous workload",
+            "target": "contacts.0.details.field0",
+            "mutation": { "count": 300, "p50Ms": 2.0999999940395355, "p95Ms": 2.5, "maxMs": 2.9000000059604645 },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 2.2000000029802322,
+                "p95Ms": 2.7000000029802322,
+                "maxMs": 3.1000000089406967
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 12000,
+            "rowSubscriptionRenders": 300
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "synchronous workload",
+            "target": "contacts.199.details.field24",
+            "mutation": { "count": 300, "p50Ms": 22.899999991059303, "p95Ms": 24, "maxMs": 25.19999998807907 },
+            "editToCommit": { "count": 300, "p50Ms": 24.400000005960464, "p95Ms": 25.5, "maxMs": 26.700000002980232 },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 60000,
+            "rowSubscriptionRenders": 0
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "synchronous workload",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 21.900000005960464,
+                "p95Ms": 23.299999997019768,
+                "maxMs": 24.600000008940697
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 23.299999997019768,
+                "p95Ms": 24.700000002980232,
+                "maxMs": 26.100000008940697
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 60000,
+            "rowSubscriptionRenders": 300
+        }
+    ]
+}

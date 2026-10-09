@@ -1,0 +1,321 @@
+{
+    "measuredAt": "2026-10-08T01:12:24.645Z",
+    "url": "http://127.0.0.1:4175/?benchmark=massive",
+    "build": "production preview, no React StrictMode",
+    "browserVersion": "154.0.8037.57",
+    "environment": {
+        "headless": true,
+        "executablePath": "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36"
+    },
+    "method": {
+        "automated": "30 warmup updates then 300 alternating synchronous setFieldValue updates with flushSync",
+        "native": "30 alternating Playwright locator.fill operations using browser input events. Timing begins inside React onChange and ends at the edited input layout effect. Two setup animation frames allow the manual recorder reset to finish before sampling.",
+        "subscriptions": "All inputs are mounted. Each field has one full-field selector and one resolved-required selector; each contact has one selected-value subscription; the form has one submitting-status subscription. This differs from the headless full-field case, which has one subscription per field.",
+        "assertions": "Exact mounted input counts, mutation and committed-edit counts, and zero unrelated field renders were checked for every sample. No page errors occurred.",
+        "limits": "Mutation includes synchronous session/subscriber work. Edit-to-commit includes React layout commit, excludes browser action overhead, pre-handler input/event-dispatch latency, frame setup waits, and paint. Timers have browser performance.now resolution. No pre-rewrite React browser baseline exists. Browser results are not directly equivalent to headless session measurements."
+    },
+    "pageErrors": [],
+    "samples": [
+        {
+            "fieldCount": 100,
+            "mode": "synchronous workload",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 0.20000000298023224,
+                "p95Ms": 0.30000001192092896,
+                "maxMs": 0.699999988079071
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 0.29999999701976776,
+                "p95Ms": 0.3999999910593033,
+                "maxMs": 0.7999999970197678
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 1200,
+            "rowSubscriptionRenders": 300,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 100
+        },
+        {
+            "fieldCount": 100,
+            "mode": "native input events",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 0.30000001192092896,
+                "p95Ms": 0.4000000059604645,
+                "maxMs": 0.5
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 0.5,
+                "p95Ms": 0.6000000089406967,
+                "maxMs": 0.6000000089406967
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 120,
+            "rowSubscriptionRenders": 30,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 100
+        },
+        {
+            "fieldCount": 100,
+            "mode": "synchronous workload",
+            "target": "contacts.3.details.field24",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 0.20000000298023224,
+                "p95Ms": 0.29999999701976776,
+                "maxMs": 0.7999999970197678
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 0.20000000298023224,
+                "p95Ms": 0.3999999910593033,
+                "maxMs": 0.7999999970197678
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 1200,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 100
+        },
+        {
+            "fieldCount": 100,
+            "mode": "native input events",
+            "target": "contacts.3.details.field24",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 0.29999999701976776,
+                "p95Ms": 0.4000000059604645,
+                "maxMs": 0.4000000059604645
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 0.4000000059604645,
+                "p95Ms": 0.5999999940395355,
+                "maxMs": 0.5999999940395355
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 120,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 100
+        },
+        {
+            "fieldCount": 1000,
+            "mode": "synchronous workload",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 2.5999999940395355,
+                "p95Ms": 3,
+                "maxMs": 3.5
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 2.8999999910593033,
+                "p95Ms": 3.4000000059604645,
+                "maxMs": 3.8999999910593033
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 12000,
+            "rowSubscriptionRenders": 300,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 1000
+        },
+        {
+            "fieldCount": 1000,
+            "mode": "native input events",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 2.7000000029802322,
+                "p95Ms": 2.9000000059604645,
+                "maxMs": 2.9000000059604645
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 3.1000000089406967,
+                "p95Ms": 3.2999999970197678,
+                "maxMs": 3.5
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 1200,
+            "rowSubscriptionRenders": 30,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 1000
+        },
+        {
+            "fieldCount": 1000,
+            "mode": "synchronous workload",
+            "target": "contacts.39.details.field24",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 2.3999999910593033,
+                "p95Ms": 2.7999999970197678,
+                "maxMs": 3.1000000089406967
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 2.5999999940395355,
+                "p95Ms": 3.199999988079071,
+                "maxMs": 3.5
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 12000,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 1000
+        },
+        {
+            "fieldCount": 1000,
+            "mode": "native input events",
+            "target": "contacts.39.details.field24",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 2.7999999970197678,
+                "p95Ms": 3,
+                "maxMs": 3
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 3.199999988079071,
+                "p95Ms": 3.4000000059604645,
+                "maxMs": 3.5
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 1200,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 1000
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "synchronous workload",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 13.699999988079071,
+                "p95Ms": 14.5,
+                "maxMs": 16.299999997019768
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 14.799999997019768,
+                "p95Ms": 15.700000002980232,
+                "maxMs": 17.5
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 60000,
+            "rowSubscriptionRenders": 300,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 5000
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "native input events",
+            "target": "contacts.0.details.field0",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 13.5,
+                "p95Ms": 14.900000005960464,
+                "maxMs": 15
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 14.599999994039536,
+                "p95Ms": 16.200000002980232,
+                "maxMs": 16.400000005960464
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 6000,
+            "rowSubscriptionRenders": 30,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 5000
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "synchronous workload",
+            "target": "contacts.199.details.field24",
+            "mutation": {
+                "count": 300,
+                "p50Ms": 13.799999997019768,
+                "p95Ms": 15,
+                "maxMs": 19.30000001192093
+            },
+            "editToCommit": {
+                "count": 300,
+                "p50Ms": 15.5,
+                "p95Ms": 17,
+                "maxMs": 21.5
+            },
+            "fieldRenders": 300,
+            "editedFieldRenders": 300,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 60000,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 5000
+        },
+        {
+            "fieldCount": 5000,
+            "mode": "native input events",
+            "target": "contacts.199.details.field24",
+            "mutation": {
+                "count": 30,
+                "p50Ms": 13.400000005960464,
+                "p95Ms": 14.400000005960464,
+                "maxMs": 16.5
+            },
+            "editToCommit": {
+                "count": 30,
+                "p50Ms": 14.799999997019768,
+                "p95Ms": 16.100000008940697,
+                "maxMs": 18.5
+            },
+            "fieldRenders": 30,
+            "editedFieldRenders": 30,
+            "unrelatedFieldRenders": 0,
+            "distinctRenderedFields": 1,
+            "rowSelectorCalls": 6000,
+            "rowSubscriptionRenders": 0,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+            "mountedInputCount": 5000
+        }
+    ]
+}

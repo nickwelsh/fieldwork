@@ -1,0 +1,24 @@
+{
+    "name": "@fieldwork/example-react",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vp dev",
+        "build": "vp build"
+    },
+    "dependencies": {
+        "@fieldwork/core": "workspace:*",
+        "@fieldwork/generator": "workspace:*",
+        "@fieldwork/inertia": "workspace:*",
+        "@fieldwork/laravel": "workspace:*",
+        "@fieldwork/react": "workspace:*",
+        "effect": "4.0.2",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^6.1.0",
+        "vite": "catalog:",
+        "vite-plus": "catalog:"
+    }
+}

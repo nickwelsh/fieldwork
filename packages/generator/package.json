@@ -1,0 +1,33 @@
+{
+    "name": "@fieldwork/generator",
+    "version": "0.1.0",
+    "license": "MIT",
+    "bin": {
+        "fieldwork": "./dist/cli.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./react": {
+            "types": "./dist/react.d.ts",
+            "import": "./dist/react.js"
+        }
+    },
+    "scripts": {
+        "build": "vp pack"
+    },
+    "dependencies": {
+        "@effect/platform-node": "4.0.2",
+        "@fieldwork/core": "workspace:*",
+        "effect": "4.0.2",
+        "jiti": "^2.6.1",
+        "oxfmt": "^0.64.0",
+        "typescript-api": "npm:typescript@^5.9.3"
+    }
+}

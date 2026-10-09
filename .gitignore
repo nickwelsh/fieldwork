@@ -1,0 +1,10 @@
+node_modules/
+dist/
+vendor/
+!packages/inertia/vendor/
+.phpunit.cache/
+*.tsbuildinfo
+.vite/
+
+.pnpm-store/
+.DS_Store

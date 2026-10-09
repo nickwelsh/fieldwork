@@ -1,0 +1,17 @@
+packages:
+  - 'packages/*'
+  - 'examples/react'
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@0.3.0
+  vite-plus: 0.3.0
+overrides:
+  vite@*: 'catalog:'
+peerDependencyRules:
+  allowedVersions:
+    vite: '*'
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - effect@4.0.2
+  - '@effect/platform-node-shared@4.0.2'
+  - '@effect/platform-node@4.0.2'

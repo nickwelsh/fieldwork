@@ -1,0 +1,27 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "types": ["node", "vite-plus/client", "vite-plus/test/globals"],
+        "paths": {
+            "@fieldwork/core": ["./packages/core/src/index.ts"],
+            "@fieldwork/react": ["./packages/react/src/index.ts"],
+            "@fieldwork/inertia/effect": ["./packages/inertia/src/effect.ts"],
+            "@fieldwork/inertia": ["./packages/inertia/src/index.ts"],
+            "@fieldwork/generator": ["./packages/generator/src/index.ts"],
+            "@fieldwork/react/generator": ["./packages/react/src/generator.ts"],
+            "@fieldwork/inertia/generator": ["./packages/inertia/src/generator.ts"],
+            "@fieldwork/generator/react": ["./packages/generator/src/react.ts"],
+            "@fieldwork/laravel/generator": ["./packages/laravel/js/generator.ts"],
+            "@fieldwork/example/*": ["./examples/react/src/*"]
+        }
+    },
+    "include": [
+        "./packages/**/*.ts",
+        "./packages/**/*.tsx",
+        "examples/**/*.ts",
+        "examples/**/*.tsx",
+        "vite.config.ts",
+        "benchmarks/**/*.ts"
+    ],
+    "exclude": ["**/dist", "**/node_modules"]
+}

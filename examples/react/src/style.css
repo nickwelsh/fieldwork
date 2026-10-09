@@ -1,0 +1,87 @@
+:root {
+    font-family: system-ui, sans-serif;
+    color: #1c2823;
+    background: #f6f8f5;
+}
+body {
+    margin: 0;
+}
+main {
+    max-width: 40rem;
+    margin: 3rem auto;
+    padding: 2rem;
+}
+form,
+fieldset {
+    display: grid;
+    gap: 1rem;
+}
+form {
+    padding: 2rem;
+    background: white;
+    border: 1px solid #d3dcd4;
+    border-radius: 0.75rem;
+}
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+input:not([type='checkbox']) {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #9bab9f;
+    border-radius: 0.3rem;
+    font: inherit;
+}
+input[type='checkbox'] {
+    margin-right: 0.5rem;
+}
+button {
+    padding: 0.8rem;
+    font: inherit;
+    cursor: pointer;
+}
+p {
+    margin: 0.3rem 0;
+}
+[role='alert'] {
+    color: #a51d32;
+}
+fieldset {
+    border: 1px solid #d3dcd4;
+}
+pre {
+    overflow: auto;
+    padding: 1rem;
+    background: #e8eee7;
+}
+.massive-benchmark {
+    max-width: 90rem;
+}
+.benchmark-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+.benchmark-controls p,
+.benchmark-controls pre,
+.benchmark-controls output {
+    grid-column: 1 / -1;
+}
+.benchmark-fields {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    align-items: start;
+}
+.benchmark-fields label {
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+}
+.benchmark-subscriptions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}

@@ -1,0 +1,46 @@
+{
+    "name": "fieldwork",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vp run -r build",
+        "check": "vp check",
+        "test": "vp test run",
+        "test:php": "composer --working-dir=packages/laravel test",
+        "format": "vp fmt",
+        "dev": "vp -C examples/react dev",
+        "generate:example": "vp exec tsx packages/generator/src/cli.ts generate --config examples/react/fieldwork.config.ts",
+        "benchmark:session": "node --import tsx benchmarks/form-session.ts"
+    },
+    "devDependencies": {
+        "@html-eslint/eslint-plugin-react": "^0.65.0",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/node": "^24.13.3",
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "@vitejs/plugin-react": "^6.1.0",
+        "effect": "4.0.2",
+        "eslint-plugin-compat": "^7.0.2",
+        "eslint-plugin-no-only-tests": "^3.4.0",
+        "eslint-plugin-no-use-extend-native": "^0.7.3",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-regexp": "^3.1.0",
+        "jsdom": "^29.0.0",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "tsx": "^4.20.0",
+        "typescript": "^7.0.2",
+        "vite": "catalog:",
+        "vite-plus": "catalog:"
+    },
+    "browserslist": [
+        "Chrome >= 120",
+        "Firefox >= 120",
+        "Safari >= 17"
+    ],
+    "engines": {
+        "node": ">=24.11.0"
+    },
+    "packageManager": "pnpm@11.24.0"
+}

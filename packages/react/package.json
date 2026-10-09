@@ -1,0 +1,38 @@
+{
+    "name": "@fieldwork/react",
+    "version": "0.1.0",
+    "license": "MIT",
+    "files": [
+        "dist"
+    ],
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./generator": {
+            "types": "./dist/generator.d.ts",
+            "import": "./dist/generator.js"
+        }
+    },
+    "scripts": {
+        "build": "vp pack"
+    },
+    "dependencies": {
+        "@fieldwork/core": "workspace:*",
+        "effect": "4.0.2"
+    },
+    "devDependencies": {
+        "@fieldwork/generator": "workspace:*"
+    },
+    "peerDependencies": {
+        "@fieldwork/generator": "^0.1.0",
+        "react": "^19.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@fieldwork/generator": {
+            "optional": true
+        }
+    }
+}
