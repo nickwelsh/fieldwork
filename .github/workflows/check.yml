@@ -27,10 +27,10 @@ jobs:
       - run: npm install --global vite-plus@0.3.0
       - run: vp install --frozen-lockfile
       - run: composer install --working-dir=packages/laravel --no-interaction --prefer-dist
+      - run: vp run build
       - run: vp check
       - run: vp exec tsc --noEmit
       - run: vp test run
-      - run: vp run build
       - run: node packages/generator/dist/cli.js generate --config examples/react/fieldwork.config.ts --check
   php:
     runs-on: ubuntu-latest
