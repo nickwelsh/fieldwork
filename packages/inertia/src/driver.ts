@@ -1,5 +1,5 @@
-import { isRecord } from '@fieldwork/core';
-import type { SubmissionDriver, SubmissionResult } from '@fieldwork/core';
+import { isRecord } from '@formbraid/core';
+import type { SubmissionDriver, SubmissionResult } from '@formbraid/core';
 import { router as defaultRouter } from '@inertiajs/core';
 import { Effect } from 'effect';
 import type { PendingVisit, VisitOptions } from '@inertiajs/core';

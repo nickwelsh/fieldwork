@@ -1,1 +1,1 @@
-export { react } from '@fieldwork/generator/react';
+export { react } from '@formbraid/generator/react';

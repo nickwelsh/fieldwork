@@ -22,7 +22,7 @@ vp test run
 composer --working-dir=packages/laravel test
 composer --working-dir=packages/laravel check
 php packages/laravel/vendor/bin/pint --test packages/laravel/src packages/laravel/tests examples/react/php
-vp exec tsx packages/generator/src/cli.ts generate --config examples/react/fieldwork.config.ts --check
+vp exec tsx packages/generator/src/cli.ts generate --config examples/react/formbraid.config.ts --check
 ```
 
 `--check` detects drift without writing generated files. In environments that restrict local sockets, add `--debug --no-progress` to PHPStan to run without worker processes.
@@ -34,19 +34,19 @@ pnpm docs:dev
 pnpm docs:api
 pnpm docs:build
 pnpm docs:check
-pnpm --filter @fieldwork/docs deploy:check
+pnpm --filter @formbraid/docs deploy:check
 ```
 
 The docs app consumes `@nickwelsh/docs-base` for layouts, navigation, MDX, search, code rendering, and Markdown exports. Authored content lives in `apps/docs/content/docs/0.x`. Folder `meta.json` files order navigation. Add a new version folder when a new API line needs separate guides.
 
 Refquill analyzes the repository's public TypeScript entry points and Laravel PHP sources on every documentation build. Its JSON is generated into ignored `apps/docs/generated/api.json` and rendered under the API reference section. API declarations, source locations, signatures, and PHP methods come from the code being built. Keep explanatory comments next to public declarations; use guides for workflows spanning several APIs.
 
-The build then prerenders the site and packages an assets-only Cloudflare Worker using the public `/fieldwork` prefix. Local `docs:dev` generates references before starting; run `docs:api` again after API edits.
+The build then prerenders the site and packages an assets-only Cloudflare Worker using the public `/formbraid` prefix. Local `docs:dev` generates references before starting; run `docs:api` again after API edits.
 
 ## Continuous integration and releases
 
 The Check workflow verifies TypeScript, package builds, generated example drift, PHP, and documentation on every push and pull request. It tests the packaged docs in the Workers runtime and validates the deployment artifact without credentials. Release deployment waits for both the TypeScript and PHP jobs.
 
-Only pushed release tags matching `v*` deploy to `https://docs.nickwelsh.me/fieldwork`. The deploy job uses the exact artifact that passed the docs build and dry run. Configure the GitHub `cloudflare` environment's `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` before the first release. The token needs Workers Scripts Edit and zone Workers Routes Edit, plus Zone Read for route discovery.
+Only pushed release tags matching `v*` deploy to `https://docs.nickwelsh.me/formbraid`. The deploy job uses the exact artifact that passed the docs build and dry run. Configure the GitHub `cloudflare` environment's `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` before the first release. The token needs Workers Scripts Edit and zone Workers Routes Edit, plus Zone Read for route discovery.
 
-The documentation site represents the latest deployed release for each authored version line. Ordinary branch pushes validate changes without changing the published site. See [the docs app README](https://github.com/nickwelsh/fieldwork/blob/main/apps/docs/README.md) for hosting prerequisites and redeployment instructions.
+The documentation site represents the latest deployed release for each authored version line. Ordinary branch pushes validate changes without changing the published site. See [the docs app README](https://github.com/nickwelsh/formbraid/blob/main/apps/docs/README.md) for hosting prerequisites and redeployment instructions.

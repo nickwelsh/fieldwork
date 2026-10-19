@@ -50,7 +50,7 @@ export const ExtractionSchema = Schema.Struct({
     version: Schema.Literal(1),
     forms: Schema.Array(FormMetadataSchema),
     diagnostics: Schema.Array(Schema.String),
-}).annotate({ message: 'Invalid or unsupported Fieldwork source export.' });
+}).annotate({ message: 'Invalid or unsupported Formbraid source export.' });
 
 const HttpMethodSchema = Schema.Literals(['get', 'post', 'put', 'patch', 'delete']);
 export const SubmissionTargetSchema = Schema.Struct({ url: Schema.String, method: HttpMethodSchema });

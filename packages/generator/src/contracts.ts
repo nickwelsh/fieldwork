@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/new-cap -- Effect tagged errors use a class factory. */
-import type { Extraction, JsonValue, Operation } from '@fieldwork/core';
+import type { Extraction, JsonValue, Operation } from '@formbraid/core';
 import { Data, Effect } from 'effect';
 
 export class GenerationError extends Data.TaggedError('GenerationError')<{
@@ -143,13 +143,13 @@ export interface OutputConfig {
     readonly actions?: string;
 }
 
-export interface FieldworkConfig<E = never, R = never> {
+export interface FormbraidConfig<E = never, R = never> {
     readonly sources: Readonly<Record<string, SourceDriver<E, R>>>;
     readonly submissions?: Readonly<Record<string, SubmissionGenerator<E, R>>>;
     readonly framework: FrameworkDriver;
     readonly output: OutputConfig;
 }
 
-export function defineConfig<const C extends FieldworkConfig<unknown, unknown>>(config: C): C {
+export function defineConfig<const C extends FormbraidConfig<unknown, unknown>>(config: C): C {
     return config;
 }

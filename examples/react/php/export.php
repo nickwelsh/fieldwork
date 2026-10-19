@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 use Example\UpdateProfileRequest;
-use Fieldwork\Laravel\RequestExtractor;
+use Formbraid\Laravel\RequestExtractor;
 
 require __DIR__.'/../../../packages/laravel/vendor/autoload.php';
 require __DIR__.'/Enums/FormField.php';

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel;
+namespace Formbraid\Laravel;
 
 use BackedEnum;
 use InvalidArgumentException;
@@ -389,7 +389,7 @@ final class RequestExtractor
     private function assertSerializable(mixed $value): void
     {
         if ($value instanceof \Closure || is_resource($value) || is_object($value) && ! $value instanceof \stdClass) {
-            throw new InvalidArgumentException('Fieldwork metadata must contain only JSON values.');
+            throw new InvalidArgumentException('Formbraid metadata must contain only JSON values.');
         }
         if (is_array($value) || $value instanceof \stdClass) {
             foreach ((array) $value as $nested) {

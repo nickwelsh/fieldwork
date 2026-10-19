@@ -6,7 +6,7 @@ description: Use typed operations, schema transformations, services, and scoped 
 Application operations preserve their success, domain error, and service types. Pass native Effect schemas directly: draft values and decoded output can have different types. Decoding and submission share one interruptible Effect, including asynchronous schema checks. The session supplies its execution scope; supply a runner when the schema decoder or operation requires additional services.
 
 ```ts
-import { createFormSession, defineForm } from '@fieldwork/core';
+import { createFormSession, defineForm } from '@formbraid/core';
 import { Context, Effect, Schema } from 'effect';
 
 type SaveError = { readonly _tag: 'SaveFailed'; readonly message: string };

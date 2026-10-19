@@ -6,7 +6,7 @@ import type {
     FormSession,
     FormState,
     SubmissionResult,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { FieldContext, useFieldContext, useSelection } from './hooks.js';

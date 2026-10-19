@@ -1,0 +1,10 @@
+/.gitattributes export-ignore
+/composer.lock export-ignore
+/js export-ignore
+/package.json export-ignore
+/tsconfig.json export-ignore
+/vite.config.ts export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml export-ignore
+/pint.json export-ignore
+/tests export-ignore

@@ -1,4 +1,4 @@
-import { createFormSession } from '@fieldwork/core';
+import { createFormSession } from '@formbraid/core';
 import type {
     BoundForm,
     FieldDefinition,
@@ -8,7 +8,7 @@ import type {
     SessionOptions,
     SubmissionDriver,
     UploadProgress,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import { createElement, useInsertionEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { createBindings, eraseInstance, typedBindings, InstanceContext } from './render.js';
@@ -34,7 +34,7 @@ function descriptorDriver(
     drivers: Readonly<Record<string, SubmissionDriver>> | undefined,
 ): SubmissionDriver | undefined {
     if (descriptor.version !== undefined && descriptor.version !== 1) {
-        throw new Error('Unsupported Fieldwork form descriptor version.');
+        throw new Error('Unsupported Formbraid form descriptor version.');
     }
     const { driver, submit } = descriptor.submission;
     if (submit !== undefined && driver !== undefined) {
@@ -88,7 +88,7 @@ function resolveForm<
     };
 }
 
-export interface FieldworkOptions<
+export interface FormbraidOptions<
     TFields extends ComponentRegistry,
     TComponents extends ComponentRegistry,
     TGroups extends ComponentRegistry,
@@ -100,11 +100,11 @@ export interface FieldworkOptions<
     readonly submitComponent?: keyof TComponents & string;
 }
 
-export function createFieldwork<
+export function createFormbraid<
     const TFieldComponents extends ComponentRegistry,
     const TComponents extends ComponentRegistry,
     const TGroupComponents extends ComponentRegistry = Record<string, never>,
->(config: FieldworkOptions<TFieldComponents, TComponents, TGroupComponents>) {
+>(config: FormbraidOptions<TFieldComponents, TComponents, TGroupComponents>) {
     const cache = new WeakMap<object, WeakMap<object, RuntimeBindings>>();
     const identities: BindingIdentityCache = {
         fields: new Map(),

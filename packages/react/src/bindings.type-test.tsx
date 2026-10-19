@@ -1,15 +1,15 @@
 /* oxlint-disable eslint/new-cap -- Effect uses capitalized functional Schema and Context constructors. */
 /* oxlint-disable unicorn/no-array-method-this-argument -- The reusable group render property is a React renderer. */
-import { Form } from '@fieldwork/example/forms.js';
-import { update } from '@fieldwork/example/generated/actions/profile.js';
+import { Form } from '@formbraid/example/forms.js';
+import { update } from '@formbraid/example/generated/actions/profile.js';
 import { Context, Effect, Schema as EffectSchema, SchemaGetter } from 'effect';
-import { bindForm, defineForm } from '@fieldwork/core';
-import type { SubmissionResult } from '@fieldwork/core';
-import { createFieldwork } from './create-fieldwork.js';
+import { bindForm, defineForm } from '@formbraid/core';
+import type { SubmissionResult } from '@formbraid/core';
+import { createFormbraid } from './create-formbraid.js';
 import { withFieldGroup } from './group.js';
 import type { FieldProps } from './types.js';
 
-const runtime = createFieldwork({ fieldComponents: {}, formComponents: {} });
+const runtime = createFormbraid({ fieldComponents: {}, formComponents: {} });
 const typedDefinition = defineForm<{ count: string }, { count: number }>()({
     id: 'typed-react',
     defaultValues: { count: '0' },
@@ -97,7 +97,7 @@ function NestedInput(_props: FieldProps<string> & { readonly placeholder?: strin
 function NestedParent(_props: FieldProps<object>) {
     return null;
 }
-const nestedRuntime = createFieldwork({
+const nestedRuntime = createFormbraid({
     fieldComponents: { Input: NestedInput, Parent: NestedParent },
     formComponents: {},
 });

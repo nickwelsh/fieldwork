@@ -7,7 +7,7 @@ import { Effect, Schema } from 'effect';
 import { createFormSession, defineForm, definitionSchema, getValue } from '../packages/core/src/index.ts';
 import type { FieldDefinition, FieldState, FormDefinition, FormSession } from '../packages/core/src/index.ts';
 
-/** Run with: node --import tsx benchmarks/form-session.ts --output=/tmp/fieldwork-session.json */
+/** Run with: node --import tsx benchmarks/form-session.ts --output=/tmp/formbraid-session.json */
 interface Values {
     readonly contacts: Array<{ readonly details: Record<string, string> }>;
 }

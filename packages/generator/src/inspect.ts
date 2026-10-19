@@ -368,14 +368,14 @@ export function inspectRegistries(module: string, root: string): RegistryManifes
             ? declaration.expression
             : initializerOf(setup.symbol, session.checker);
     if (expression === undefined) {
-        throw new Error('The form module must default-export its createFieldwork setup.');
+        throw new Error('The form module must default-export its createFormbraid setup.');
     }
-    const options = callOptions(expression, session.checker, 'createFieldwork');
+    const options = callOptions(expression, session.checker, 'createFormbraid');
     const fields = option(options, 'fieldComponents', session.checker);
     const components = option(options, 'formComponents', session.checker);
     const groups = option(options, 'fieldGroups', session.checker);
     if (fields === undefined || components === undefined) {
-        throw new Error('createFieldwork must register fieldComponents and formComponents.');
+        throw new Error('createFormbraid must register fieldComponents and formComponents.');
     }
     return {
         fields: registry(fields, session),

@@ -6,7 +6,7 @@ description: Submit through an application callback and preserve cancellation an
 A callback descriptor is useful when an integration owns execution and can expose a portable definition without depending on a specific registry or transport.
 
 ```ts
-import type { FormDescriptor, SubmissionCallback } from '@fieldwork/core';
+import type { FormDescriptor, SubmissionCallback } from '@formbraid/core';
 
 type ProfileValues = { name: string };
 
@@ -31,7 +31,7 @@ const profileForm = {
 } satisfies FormDescriptor<ProfileValues>;
 ```
 
-The example assumes an application endpoint whose successful response means the save was accepted. Supply your application's authentication and CSRF protection. Map a backend validation response to `{ status: 'invalid', errors }` after validating that response's shape; Fieldwork does not assume a particular HTTP error format.
+The example assumes an application endpoint whose successful response means the save was accepted. Supply your application's authentication and CSRF protection. Map a backend validation response to `{ status: 'invalid', errors }` after validating that response's shape; Formbraid does not assume a particular HTTP error format.
 
 ## Callback contract
 

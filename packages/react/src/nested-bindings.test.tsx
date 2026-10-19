@@ -1,15 +1,15 @@
 /* oxlint-disable vitest/no-conditional-in-test -- Test fixture components deliberately render candidate and committed trees. */
 /* oxlint-disable unicorn/no-array-method-this-argument -- The reusable group render property is a React renderer. */
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
-import { defineForm, getValue } from '@fieldwork/core';
-import type { FieldDefinition } from '@fieldwork/core';
+import { defineForm, getValue } from '@formbraid/core';
+import type { FieldDefinition } from '@formbraid/core';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Suspense, startTransition, useId, useState } from 'react';
 import type { ReactNode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
-import { createFieldwork } from './create-fieldwork.js';
+import { createFormbraid } from './create-formbraid.js';
 import { useFieldContext } from './hooks.js';
 import { withFieldGroup } from './group.js';
 import type { BoundFields, FieldProps } from './types.js';
@@ -77,7 +77,7 @@ const fields = {
 } as const;
 const defaults = { value: { name: 'Boston', length: 'Long', displayName: 'Display', type: 'Type', $$typeof: 'Token' } };
 const definition = defineForm<typeof defaults>()({ id: 'nested-parent', defaultValues: defaults, fields, groups: {} });
-const runtime = createFieldwork({ fieldComponents: { Input, Parent }, formComponents: {}, fieldGroups: { NameGroup } });
+const runtime = createFormbraid({ fieldComponents: { Input, Parent }, formComponents: {}, fieldGroups: { NameGroup } });
 function ordered(reverse: boolean) {
     const reversed = {
         'value.$$typeof': fields['value.$$typeof'],

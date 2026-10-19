@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { withFieldGroup } from '@fieldwork/react';
+import { withFieldGroup } from '@formbraid/react';
 import { FieldErrors } from './field-components.js';
 
 export interface AddressValues {

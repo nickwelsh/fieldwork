@@ -1,4 +1,4 @@
-# Fieldwork
+# Formbraid
 
 Generate application-owned React forms from Laravel FormRequests. Effect 4 owns form state, subscriptions, validation, submission, metadata decoding, and generation workflows. Native Effect scopes, fibers, and deferred results manage execution and cancellation; the Node adapter supplies filesystem and subprocess services. React bindings, source extraction, and submission transports stay separate from the portable form contract.
 
@@ -8,21 +8,21 @@ This repository uses **Vite+** for development, packaging, formatting, type-awar
 
 | Package                | Responsibility                                                                                  |
 | ---------------------- | ----------------------------------------------------------------------------------------------- |
-| `@fieldwork/core`      | Portable definitions, constraint validation, Effect form sessions, route binding                |
-| `@fieldwork/react`     | React subscriptions, bound fields/components/groups, automatic layouts                          |
-| `@fieldwork/inertia`   | Inertia submission, server errors, upload progress, scoped cancellation                         |
-| `@fieldwork/generator` | Driver contracts, generation orchestration, artifact synchronization and drift checks           |
-| `@fieldwork/laravel`   | Node generator integration, backend enum generation and HTTP operation provider                 |
-| `fieldwork/laravel`    | Laravel configuration, FormRequest extraction, `fieldwork:export` and `fieldwork:http` commands |
+| `@formbraid/core`      | Portable definitions, constraint validation, Effect form sessions, route binding                |
+| `@formbraid/react`     | React subscriptions, bound fields/components/groups, automatic layouts                          |
+| `@formbraid/inertia`   | Inertia submission, server errors, upload progress, scoped cancellation                         |
+| `@formbraid/generator` | Driver contracts, generation orchestration, artifact synchronization and drift checks           |
+| `@formbraid/laravel`   | Node generator integration, backend enum generation and HTTP operation provider                 |
+| `formbraid/laravel`    | Laravel configuration, FormRequest extraction, `formbraid:export` and `formbraid:http` commands |
 | `examples/react`       | Runnable profile form with a composite address field group                                      |
 
-Packages are local and have not been published to npm or Packagist. The runtime uses **Effect 4.0.2**.
+Packages have not been published to npm or Packagist. See [RELEASING.md](RELEASING.md) for staging, trusted publishing, the Composer mirror, and documentation deployment. The runtime uses **Effect 4.0.2**.
 
-The [documentation site](https://docs.nickwelsh.me/fieldwork) includes usage guides and a Refquill-generated TypeScript/PHP API reference. Run `pnpm docs:dev` locally or see [apps/docs](apps/docs/README.md) for release deployment setup.
+The [documentation site](https://docs.nickwelsh.me/formbraid) includes usage guides and a Refquill-generated TypeScript/PHP API reference. Run `pnpm docs:dev` locally or see [apps/docs](apps/docs/README.md) for release deployment setup.
 
 The [performance benchmark](benchmarks/README.md) includes a mounted React form with up to 5,000 inputs and a headless editing/subscription harness, with recorded measurements and reproduction instructions.
 
-Existing integrations must replace their form hook factory with direct `createFieldwork` registries, import context hooks from `@fieldwork/react`, and update field components to `value`, `setValue`, `touch`, and `errors`. Remove the previous form-library dependencies and application hook/context modules. Custom source drivers, operation providers, and submission drivers return Effects; wrap synchronous work with `Effect.sync`, and use `Effect.callback` or `Effect.tryPromise` at asynchronous platform boundaries.
+Existing integrations must replace their form hook factory with direct `createFormbraid` registries, import context hooks from `@formbraid/react`, and update field components to `value`, `setValue`, `touch`, and `errors`. Remove the previous form-library dependencies and application hook/context modules. Custom source drivers, operation providers, and submission drivers return Effects; wrap synchronous work with `Effect.sync`, and use `Effect.callback` or `Effect.tryPromise` at asynchronous platform boundaries.
 
 ## Run the monorepo
 
@@ -45,19 +45,19 @@ vp test run
 composer --working-dir=packages/laravel test
 composer --working-dir=packages/laravel check
 php packages/laravel/vendor/bin/pint --test packages/laravel/src packages/laravel/tests examples/react/php
-vp exec tsx packages/generator/src/cli.ts generate --config examples/react/fieldwork.config.ts --check
+vp exec tsx packages/generator/src/cli.ts generate --config examples/react/formbraid.config.ts --check
 ```
 
 `--check` detects drift without writing generated files. In environments that restrict local sockets, add `--debug --no-progress` to PHPStan to run without worker processes.
 
 ## Public form contract
 
-Any package can produce forms for Fieldwork. Generation is optional: the React runtime depends on `@fieldwork/core`'s public contract, not on the Laravel package or generator. Zero for Laravel and other integrations can implement this contract in their own packages with type-only imports.
+Any package can produce forms for Formbraid. Generation is optional: the React runtime depends on `@formbraid/core`'s public contract, not on the Laravel package or generator. Zero for Laravel and other integrations can implement this contract in their own packages with type-only imports.
 
 A `FormDescriptor` is a versioned object pairing a reusable `FormDefinition` with a submission strategy and optional record-specific defaults:
 
 ```ts
-import type { FormDefinition, FormDescriptor, SubmissionCallback } from '@fieldwork/core';
+import type { FormDefinition, FormDescriptor, SubmissionCallback } from '@formbraid/core';
 
 type TodoValues = { title: string; done: boolean };
 
@@ -75,7 +75,7 @@ const httpForm = {
 } satisfies FormDescriptor<TodoValues>;
 ```
 
-Register a matching runtime executor, for example `submissions: { http: inertia() }`, in `createFieldwork`. The producer supplies the target; the application chooses how that target executes. Existing Laravel generation now emits this descriptor from each generated action's `.form(parameters)` helper. Generator submission keys still select runtime driver names.
+Register a matching runtime executor, for example `submissions: { http: inertia() }`, in `createFormbraid`. The producer supplies the target; the application chooses how that target executes. Existing Laravel generation now emits this descriptor from each generated action's `.form(parameters)` helper. Generator submission keys still select runtime driver names.
 
 For an integration that owns execution, supply a callback instead of a driver:
 
@@ -108,20 +108,20 @@ const instance = useForm(form);
 return <Form form={instance} />;
 ```
 
-`Form` creates the Fieldwork session. Its components read values, errors, and submission state from that one session. A producer must not synchronize a separate editable-value store with Fieldwork. Definition defaults are the fallback; descriptor defaults override them, and an explicit `defaultValues` option overrides descriptor defaults. Defaults initialize a mount rather than resetting edits on rerender. Use a key or explicit reset to switch records. Callbacks update on committed renders, while an in-flight submission keeps its captured handler and values.
+`Form` creates the Formbraid session. Its components read values, errors, and submission state from that one session. A producer must not synchronize a separate editable-value store with Formbraid. Definition defaults are the fallback; descriptor defaults override them, and an explicit `defaultValues` option overrides descriptor defaults. Defaults initialize a mount rather than resetting edits on rerender. Use a key or explicit reset to switch records. Callbacks update on committed renders, while an in-flight submission keeps its captured handler and values.
 
 Cancellation aborts the callback's signal and suppresses late outcomes and progress. The integration owns any underlying cancellation or cleanup; an already-enqueued durable mutation may still execute. Explicit `submission` or `operation` options replace the descriptor's strategy for that form instance.
 
-For JSON producers, export `FormDescriptorData`, which excludes runtime schemas and callbacks. Its version-1 format is checked by `FormDescriptorSchema`, `parseFormDescriptor(json)`, or `parseFormDescriptorEffect(json)`. All fields, props, constraints, defaults, and driver bindings in this data format are JSON values. Fieldwork compiles field constraints into validation at runtime; native Effect schemas remain an optional runtime extension on `FormDefinition` for decoding and transformations. Validate untrusted JSON at the producer boundary before rendering. TypeScript producers should preserve literal field/component keys using `satisfies` or `defineForm<Values>()`, and declare editable default-value types explicitly so a blank initial value does not narrow the entire draft to a string literal.
+For JSON producers, export `FormDescriptorData`, which excludes runtime schemas and callbacks. Its version-1 format is checked by `FormDescriptorSchema`, `parseFormDescriptor(json)`, or `parseFormDescriptorEffect(json)`. All fields, props, constraints, defaults, and driver bindings in this data format are JSON values. Formbraid compiles field constraints into validation at runtime; native Effect schemas remain an optional runtime extension on `FormDefinition` for decoding and transformations. Validate untrusted JSON at the producer boundary before rendering. TypeScript producers should preserve literal field/component keys using `satisfies` or `defineForm<Values>()`, and declare editable default-value types explicitly so a blank initial value does not narrow the entire draft to a string literal.
 
-Bare definitions, existing `bindForm` calls, and initialized form instances remain supported. `bindForm` now includes `version: 1`; `BoundForm` remains available for existing driver-only integrations. No Fieldwork-owned Zero adapter is required or included.
+Bare definitions, existing `bindForm` calls, and initialized form instances remain supported. `bindForm` now includes `version: 1`; `BoundForm` remains available for existing driver-only integrations. No Formbraid-owned Zero adapter is required or included.
 
 ## Register application components
 
-Fieldwork owns the form session and React contexts. Field components receive presentation metadata and subscribe to their own value, errors, and metadata:
+Formbraid owns the form session and React contexts. Field components receive presentation metadata and subscribe to their own value, errors, and metadata:
 
 ```tsx
-import { useFieldContext, type FieldProps } from '@fieldwork/react';
+import { useFieldContext, type FieldProps } from '@formbraid/react';
 import { useId } from 'react';
 
 export function TextField({ label, helpText, constraints }: FieldProps<string>) {
@@ -155,7 +155,7 @@ export function TextField({ label, helpText, constraints }: FieldProps<string>) 
 `setValue` accepts a value or an updater. `touch()` records interaction; `meta` exposes `isTouched`, `isDirty`, and `isValid`. Errors are normalized strings.
 
 ```tsx
-import { useFormContext } from '@fieldwork/react';
+import { useFormContext } from '@formbraid/react';
 
 export function SubmitButton({ label = 'Save' }: { label?: string }) {
     const form = useFormContext();
@@ -174,13 +174,13 @@ export function SubmitButton({ label = 'Save' }: { label?: string }) {
 Register the components directly, retaining their literal keys:
 
 ```ts
-import { createFieldwork } from '@fieldwork/react';
-import { inertia } from '@fieldwork/inertia';
+import { createFormbraid } from '@formbraid/react';
+import { inertia } from '@formbraid/inertia';
 import { TextField, CheckboxField } from './field-components';
 import { SubmitButton, FormErrors } from './form-components';
 import { fieldGroups } from './address-group';
 
-const fieldwork = createFieldwork({
+const formbraid = createFormbraid({
     fieldComponents: { TextField, CheckboxField },
     formComponents: { SubmitButton, FormErrors },
     fieldGroups,
@@ -188,18 +188,18 @@ const fieldwork = createFieldwork({
     submitComponent: 'SubmitButton',
 });
 
-export default fieldwork;
-export const { Form, useForm } = fieldwork;
+export default formbraid;
+export const { Form, useForm } = formbraid;
 ```
 
-Avoid annotating registries as broad `Record<string, ...>` types: literal keys power generated enums and typed bound components. Context hooks are exported by `@fieldwork/react`, so application context and hook-factory modules are unnecessary.
+Avoid annotating registries as broad `Record<string, ...>` types: literal keys power generated enums and typed bound components. Context hooks are exported by `@formbraid/react`, so application context and hook-factory modules are unnecessary.
 
 ### Inertia Effect
 
 For [Inertia Effect](https://github.com/nickwelsh/inertia-effect), change the runtime import to:
 
 ```ts
-import { inertia } from '@fieldwork/inertia/effect';
+import { inertia } from '@formbraid/inertia/effect';
 
 // Register under the same submission key used by your generated definitions.
 const submissions = {
@@ -207,11 +207,11 @@ const submissions = {
 };
 ```
 
-This adapter composes the application's `router.visitEffect` directly. It waits for navigation completion, including the page commit and renderer acknowledgement. Effectful visit callbacks run in the submitting context. The generator remains `@fieldwork/inertia/generator`: both adapters use the same HTTP bindings. An optional `router` accepts your own Inertia Effect router instance.
+This adapter composes the application's `router.visitEffect` directly. It waits for navigation completion, including the page commit and renderer acknowledgement. Effectful visit callbacks run in the submitting context. The generator remains `@formbraid/inertia/generator`: both adapters use the same HTTP bindings. An optional `router` accepts your own Inertia Effect router instance.
 
-Success and validation outcomes become Fieldwork success and field errors. Navigation failures and handled HTTP/network exceptions become submission failures; defects remain Effect defects. Prevented, interrupted, cancelled, discarded, and redirect outcomes become cancelled submissions. A redirect starts another navigation without awaiting its validation result, so it cannot confirm this submission's success. Aborting the submission signal or interrupting its fiber interrupts the native visit and releases the listener; Inertia can finish an already-started atomic history/render commit before cancellation completes.
+Success and validation outcomes become Formbraid success and field errors. Navigation failures and handled HTTP/network exceptions become submission failures; defects remain Effect defects. Prevented, interrupted, cancelled, discarded, and redirect outcomes become cancelled submissions. A redirect starts another navigation without awaiting its validation result, so it cannot confirm this submission's success. Aborting the submission signal or interrupting its fiber interrupts the native visit and releases the listener; Inertia can finish an already-started atomic history/render commit before cancellation completes.
 
-The fork retains the `@inertiajs/core` package name. Install it as that package so your application and Fieldwork share one router. At revision `18db6eba25c95837cf303745e46fc6201bc35177`, the repository does not contain built exports or a package preparation hook. A direct Git dependency therefore lacks executable exports. Until the fork adds a preparation hook, build and pack its core from Git:
+The fork retains the `@inertiajs/core` package name. Install it as that package so your application and Formbraid share one router. At revision `18db6eba25c95837cf303745e46fc6201bc35177`, the repository does not contain built exports or a package preparation hook. A direct Git dependency therefore lacks executable exports. Until the fork adds a preparation hook, build and pack its core from Git:
 
 ```sh
 git clone https://github.com/nickwelsh/inertia-effect.git
@@ -224,14 +224,14 @@ pnpm --dir packages/core pack --out /tmp/inertia-core-effect.tgz
 pnpm add /tmp/inertia-core-effect.tgz
 ```
 
-Use the matching forked React/Vue/Svelte adapter in your application too. Fieldwork's development dependency is a core tarball built from this pinned Git revision; its source and rebuild instructions are recorded alongside the archive. Ordinary Inertia applications keep the existing `@fieldwork/inertia` import.
+Use the matching forked React/Vue/Svelte adapter in your application too. Formbraid's development dependency is a core tarball built from this pinned Git revision; its source and rebuild instructions are recorded alongside the archive. Ordinary Inertia applications keep the existing `@formbraid/inertia` import.
 
 ## Laravel rules and default components
 
 Install the local Composer package into a Laravel app using a Composer path repository. Laravel discovers its service provider automatically. Publish configuration with:
 
 ```sh
-php artisan vendor:publish --tag=fieldwork-config
+php artisan vendor:publish --tag=formbraid-config
 ```
 
 Map rule-inferred value types to your generated enum:
@@ -278,7 +278,7 @@ public function rules(): array
 The default label is the title-case version of the final named field segment: `first_name` becomes `First Name`, and `billing.city` becomes `City`.
 
 ```php
-use Fieldwork\Laravel\Field;
+use Formbraid\Laravel\Field;
 
 public function fields(): array
 {
@@ -294,11 +294,11 @@ Props must be JSON values. Generation checks supplied props against the applicat
 ## Generate definitions, actions, and enums
 
 ```ts
-// fieldwork.config.ts
-import { defineConfig } from '@fieldwork/generator';
-import { laravel } from '@fieldwork/laravel/generator';
-import { react } from '@fieldwork/react/generator';
-import { inertia } from '@fieldwork/inertia/generator';
+// formbraid.config.ts
+import { defineConfig } from '@formbraid/generator';
+import { laravel } from '@formbraid/laravel/generator';
+import { react } from '@formbraid/react/generator';
+import { inertia } from '@formbraid/inertia/generator';
 
 const app = laravel();
 
@@ -313,9 +313,9 @@ export default defineConfig({
 });
 ```
 
-Paths resolve relative to the config file. React inspects the default-exported `createFieldwork` setup and its direct component registries and field groups without executing UI modules. Setup options and group declarations must be statically inspectable.
+Paths resolve relative to the config file. React inspects the default-exported `createFormbraid` setup and its direct component registries and field groups without executing UI modules. Setup options and group declarations must be statically inspectable.
 
-Request discovery and enum targets belong in `config/fieldwork.php`:
+Request discovery and enum targets belong in `config/formbraid.php`:
 
 ```php
 return [
@@ -335,9 +335,9 @@ return [
 Enum targets are a declarative array of class names or `null` to disable a registry. Paths follow the application's Composer PSR-4 mappings. The Laravel integration reads only this array and its PHP imports before booting Laravel, writes the enums, then extracts schemas. Config and requests can therefore reference generated enum cases on the first run. This uses no config closures and remains compatible with Laravel config caching. Clear cached config after changing backend discovery or mappings. `laravel({ root, profile: 'fixtures' })` selects a backend discovery profile; directories are defined only in PHP.
 
 ```sh
-fieldwork fields                 # enums only; useful for initial setup
-fieldwork generate               # enums, forms, and named route actions
-fieldwork generate --check       # CI drift check
+formbraid fields                 # enums only; useful for initial setup
+formbraid generate               # enums, forms, and named route actions
+formbraid generate --check       # CI drift check
 ```
 
 Routes whose controller/closure parameters reference a FormRequest generate named action modules. For `profile.update` with `/users/{user}`, use:
@@ -377,7 +377,7 @@ Schemas can render directly for local state/validation. Submission requires a bo
 
 Unknown fields and invalid component props are TypeScript errors. Nested named fields use nested access, such as `<fields.billing.city />`. Bracket paths such as `rows[0].name` expose `fields.rows[0].name`; assign that binding to a capitalized variable, such as `const RowName = fields.rows[0].name`, then render `<RowName />`. A container field can render through `<fields.billing />` while also exposing its child bindings.
 
-Custom children render exactly the supplied layout. Without children, Fieldwork renders ungrouped fields and each group once in field order, followed by the configured submit component.
+Custom children render exactly the supplied layout. Without children, Formbraid renders ungrouped fields and each group once in field order, followed by the configured submit component.
 
 Each mounted `Form` owns an independent Effect form session. Bound component identity stays stable across metadata and field-order changes, preserving focus and drafts. Adding or removing a container's child bindings creates a new immutable container binding; unchanged child bindings retain their identity. `defaultValues` initializes the mount; use a React `key` when switching records, or call `form.reset()` deliberately.
 
@@ -399,7 +399,7 @@ Native schema record keys containing dots, brackets, or other segments that fiel
 
 Generated constraint schemas are compiled once per definition object and reused across submissions and sessions. Definitions are readonly; supply a new definition object when changing rules. Schema construction runs inside the submission Effect, so construction defects settle the submission instead of leaving it pending.
 
-Execution snapshots freeze the result envelope and validation messages while preserving typed success/error payload identity. Domain payloads can contain cycles, symbols, or application objects; Fieldwork does not clone them. React installs committed submission options before child layout effects can submit, and metadata-only definition updates preserve bound input identity and focus.
+Execution snapshots freeze the result envelope and validation messages while preserving typed success/error payload identity. Domain payloads can contain cycles, symbols, or application objects; Formbraid does not clone them. React installs committed submission options before child layout effects can submit, and metadata-only definition updates preserve bound input identity and focus.
 
 Hidden or unmounted React owners suppress progress and result callbacks. Notifications produced before layout activation are deferred until the owner is active; cancellation, reset, and replacement submissions discard stale queued callbacks.
 
@@ -412,7 +412,7 @@ An Inertia transport payload must be a plain record or `FormData`. Nested values
 Application operations preserve their success, domain error, and service types. Pass native Effect schemas directly: draft values and decoded output can have different types. Decoding and submission share one interruptible Effect, including asynchronous schema checks. The session supplies its execution scope; supply a runner when the schema decoder or operation requires additional services.
 
 ```ts
-import { createFormSession, defineForm } from '@fieldwork/core';
+import { createFormSession, defineForm } from '@formbraid/core';
 import { Context, Effect, Schema } from 'effect';
 
 type SaveError = { readonly _tag: 'SaveFailed'; readonly message: string };
@@ -470,10 +470,10 @@ React `useForm` accepts the same `operation` and `run` options. React subscripti
 
 ## Composite groups
 
-Use Fieldwork's `withFieldGroup` to let one component own several backend fields:
+Use Formbraid's `withFieldGroup` to let one component own several backend fields:
 
 ```tsx
-import { withFieldGroup } from '@fieldwork/react';
+import { withFieldGroup } from '@formbraid/react';
 
 const addressDefaults: {
     line1: string;
@@ -509,7 +509,7 @@ export const fieldGroups = { AddressAutocomplete };
 
 ```php
 use App\Enums\FormGroup;
-use Fieldwork\Laravel\FieldGroup;
+use Formbraid\Laravel\FieldGroup;
 
 public function groups(): array
 {
@@ -545,12 +545,12 @@ Generation requires rules that can be described without authenticated/live reque
 
 ## Extending drivers
 
-A `SourceDriver<E, R>` returns an Effect producing the versioned portable `Extraction` contract: schemas and diagnostics. Its optional artifact preparation also returns an Effect. Laravel's scoped subprocess integration extracts schemas and prepares PHP enums; `fieldwork:export` has no route flag or HTTP dependency. `ExtractionSchema` and `parseExtractionEffect` decode external metadata with native Effect Schema failures; synchronous parse helpers execute the same decoder at compiler boundaries.
+A `SourceDriver<E, R>` returns an Effect producing the versioned portable `Extraction` contract: schemas and diagnostics. Its optional artifact preparation also returns an Effect. Laravel's scoped subprocess integration extracts schemas and prepares PHP enums; `formbraid:export` has no route flag or HTTP dependency. `ExtractionSchema` and `parseExtractionEffect` decode external metadata with native Effect Schema failures; synchronous parse helpers execute the same decoder at compiler boundaries.
 
-An `OperationProvider<TBinding, E, R>` associates a source's schema IDs with named operations, parameters and typed transport bindings through an Effect. Laravel's `app.http()` invokes the separate `fieldwork:http` provider. Inertia's generator consumes this portable HTTP capability; its runtime has no Laravel dependency. `defineSubmission`, `defineConfig`, and `generate` preserve provider errors and required services. `generate(config, options)` returns an Effect requiring filesystem services plus the configured providers' services; the CLI supplies native Node services and runs the workflow with `NodeRuntime.runMain`.
+An `OperationProvider<TBinding, E, R>` associates a source's schema IDs with named operations, parameters and typed transport bindings through an Effect. Laravel's `app.http()` invokes the separate `formbraid:http` provider. Inertia's generator consumes this portable HTTP capability; its runtime has no Laravel dependency. `defineSubmission`, `defineConfig`, and `generate` preserve provider errors and required services. `generate(config, options)` returns an Effect requiring filesystem services plus the configured providers' services; the CLI supplies native Node services and runs the workflow with `NodeRuntime.runMain`.
 
 Use `defineSubmission({ bindings, imports, emitBinding })` to adapt another operation provider into generated actions. `emitBinding` generates the runtime binding expression. A runtime `SubmissionDriver` receives the parsed form data, portable JSON binding, abort signal and optional progress callback, then returns an Effect producing a `SubmissionResult`. Effects can be interrupted through session cancellation; asynchronous drivers should implement abort cleanup. `defineSubmissionDriver({ accepts, submit })` validates bindings and exposes a typed executor. For a mutation transport such as Zero, bindings can identify a mutation and its context; the executor maps values/context into mutation arguments and waits for server acceptance before returning success. A production Zero adapter is not included.
 
 Multiple sources use `sources: { app, external }`; their schemas appear under `forms/app` and `forms/external`. Multiple submission integrations use `submissions: { web, mutations }`; actions appear under `actions/web` and `actions/mutations`. A single source or submission keeps flat output paths. Reuse the registered source instance in each operation provider. Unknown schema associations, conflicting artifacts and duplicate operation names are generation errors.
 
-Generation synchronizes files marked `// Generated by Fieldwork.` within the configured form/action output directories and preserves application-owned files. Check mode detects obsolete files without deleting them. Configurations should own separate output directories.
+Generation synchronizes files marked `// Generated by Formbraid.` within the configured form/action output directories and preserves application-owned files. Check mode detects obsolete files without deleting them. Configurations should own separate output directories.

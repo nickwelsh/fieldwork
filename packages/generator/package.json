@@ -1,9 +1,19 @@
 {
-    "name": "@fieldwork/generator",
+    "name": "@formbraid/generator",
     "version": "0.1.0",
+    "description": "Generate application-owned forms from portable source definitions.",
+    "homepage": "https://docs.nickwelsh.me/formbraid/",
+    "bugs": {
+        "url": "https://github.com/nickwelsh/formbraid/issues"
+    },
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nickwelsh/formbraid.git",
+        "directory": "packages/generator"
+    },
     "bin": {
-        "fieldwork": "./dist/cli.js"
+        "formbraid": "./dist/cli.js"
     },
     "files": [
         "dist"
@@ -19,15 +29,21 @@
             "import": "./dist/react.js"
         }
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "vp pack"
     },
     "dependencies": {
         "@effect/platform-node": "4.0.2",
-        "@fieldwork/core": "workspace:*",
+        "@formbraid/core": "workspace:*",
         "effect": "4.0.2",
         "jiti": "^2.6.1",
         "oxfmt": "^0.67.0",
         "typescript-api": "npm:typescript@^5.9.3"
+    },
+    "engines": {
+        "node": ">=24.11.0"
     }
 }

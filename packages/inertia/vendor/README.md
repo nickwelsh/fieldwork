@@ -29,6 +29,6 @@ Then install the resulting package in the consuming application using the same c
 pnpm add /tmp/inertia-core-effect-18db6eba25c95837.tgz
 ```
 
-For this repository, copy the resulting archive into this directory and run `pnpm install` from the workspace root. The checked-in lockfile records the archive integrity. Verify that `@inertiajs/core` exposes `router.visitEffect` and the `NavigationFailure` / `VisitOutcome` types, then use `@fieldwork/inertia/effect` for the native adapter. The default `@fieldwork/inertia` adapter continues to support standard Inertia.
+For this repository, copy the resulting archive into this directory and run `pnpm install` from the workspace root. The checked-in lockfile records the archive integrity. Verify that `@inertiajs/core` exposes `router.visitEffect` and the `NavigationFailure` / `VisitOutcome` types, then use `@formbraid/inertia/effect` for the native adapter. The default `@formbraid/inertia` adapter continues to support standard Inertia.
 
 Adding a package preparation script in the fork would allow a later commit to replace this development archive with a direct pinned Git dependency. No upstream repository changes or pushes were made to create this package.

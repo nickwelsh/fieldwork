@@ -3,10 +3,10 @@ title: Composite field groups
 description: Map several backend fields into one typed application component.
 ---
 
-Use Fieldwork's `withFieldGroup` to let one component own several backend fields:
+Use Formbraid's `withFieldGroup` to let one component own several backend fields:
 
 ```tsx
-import { withFieldGroup } from '@fieldwork/react';
+import { withFieldGroup } from '@formbraid/react';
 
 const addressDefaults: {
     line1: string;
@@ -42,7 +42,7 @@ export const fieldGroups = { AddressAutocomplete };
 
 ```php
 use App\Enums\FormGroup;
-use Fieldwork\Laravel\FieldGroup;
+use Formbraid\Laravel\FieldGroup;
 
 public function groups(): array
 {

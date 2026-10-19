@@ -1,6 +1,6 @@
 {
-    "name": "fieldwork/laravel",
-    "description": "Generate portable Fieldwork forms from Laravel FormRequests.",
+    "name": "formbraid/laravel",
+    "description": "Generate portable Formbraid forms from Laravel FormRequests.",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -21,18 +21,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Fieldwork\\Laravel\\": "src/"
+            "Formbraid\\Laravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Fieldwork\\Laravel\\Tests\\": "tests/"
+            "Formbraid\\Laravel\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Fieldwork\\Laravel\\FieldworkServiceProvider"
+                "Formbraid\\Laravel\\FormbraidServiceProvider"
             ]
         }
     },
@@ -40,5 +40,10 @@
         "test": "phpunit",
         "check": "phpstan analyse --memory-limit=1G",
         "format": "pint --test"
+    },
+    "homepage": "https://docs.nickwelsh.me/formbraid/",
+    "support": {
+        "issues": "https://github.com/nickwelsh/formbraid/issues",
+        "source": "https://github.com/formbraid/laravel"
     }
 }

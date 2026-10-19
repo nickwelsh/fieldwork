@@ -2,7 +2,7 @@ import { defineConfig, triggers } from 'cf/config';
 
 export default defineConfig({
     worker: {
-        name: 'fieldwork-docs',
+        name: 'formbraid-docs',
         compatibilityDate: '2026-10-19',
         workersDev: false,
         previewUrls: false,
@@ -11,8 +11,8 @@ export default defineConfig({
             notFoundHandling: '404-page',
         },
         triggers: [
-            triggers.fetch({ pattern: 'docs.nickwelsh.me/fieldwork', zone: 'nickwelsh.me' }),
-            triggers.fetch({ pattern: 'docs.nickwelsh.me/fieldwork/*', zone: 'nickwelsh.me' }),
+            triggers.fetch({ pattern: 'docs.nickwelsh.me/formbraid', zone: 'nickwelsh.me' }),
+            triggers.fetch({ pattern: 'docs.nickwelsh.me/formbraid/*', zone: 'nickwelsh.me' }),
         ],
         observability: {
             enabled: true,

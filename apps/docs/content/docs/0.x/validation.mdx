@@ -5,7 +5,7 @@ description: Understand submit-time decoding, supported client constraints, and 
 
 ## When validation runs
 
-Validation runs on submit. Changing a value updates the draft; touching a field records interaction. Neither starts validation. A session captures the draft, decodes it with `Schema.decodeUnknownEffect`, and submits only when decoding succeeds. Schema issues become field or root errors. The React form uses `noValidate` so Fieldwork owns this submission lifecycle.
+Validation runs on submit. Changing a value updates the draft; touching a field records interaction. Neither starts validation. A session captures the draft, decodes it with `Schema.decodeUnknownEffect`, and submits only when decoding succeeds. Schema issues become field or root errors. The React form uses `noValidate` so Formbraid owns this submission lifecycle.
 
 Generated constraint schemas are compiled once per definition object and reused. Treat definitions as readonly and create a new definition object when changing rules. Native Effect schemas can decode a draft type into a different output type and can require application services. See [headless sessions](./advanced/headless.mdx) for a complete transformation example.
 

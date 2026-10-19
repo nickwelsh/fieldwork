@@ -38,34 +38,34 @@ try {
         assert.equal(response.status, 200, pathname);
         return await response.text();
     };
-    await get('/fieldwork/');
+    await get('/formbraid/');
     for await (const file of glob('content/docs/**/*.mdx')) {
-        const route = file.replace('content', '/fieldwork').replace(/(?:\/index)?\.mdx$/u, '/');
+        const route = file.replace('content', '/formbraid').replace(/(?:\/index)?\.mdx$/u, '/');
         const html = await get(route);
         assert.ok(html.includes(`https://docs.nickwelsh.me${route.replace(/\/$/u, '')}`), route);
     }
 
     const reference = resolveDocument(JSON.parse(await readFile('generated/api.json', 'utf8')));
     assert.ok(reference.symbols.some((symbol) => symbol.name === 'createFormSession'));
-    assert.ok(reference.symbols.some((symbol) => symbol.name === 'createFieldwork'));
+    assert.ok(reference.symbols.some((symbol) => symbol.name === 'createFormbraid'));
     assert.ok(reference.symbols.some((symbol) => symbol.language === 'php' && symbol.name === 'Field'));
-    await get('/fieldwork/docs/0.x/api/');
-    await get('/fieldwork/docs/0.x/api/typescript/');
-    await get('/fieldwork/docs/0.x/api/laravel/');
-    const search = await get('/fieldwork/api/search');
+    await get('/formbraid/docs/0.x/api/');
+    await get('/formbraid/docs/0.x/api/typescript/');
+    await get('/formbraid/docs/0.x/api/laravel/');
+    const search = await get('/formbraid/api/search');
     assert.ok(search.includes('createFormSession'));
     assert.ok(search.includes('Quickstart'));
-    const markdown = await get('/fieldwork/llms.mdx/docs/0.x/getting-started/quickstart/content.md');
-    assert.ok(markdown.includes('createFieldwork'));
-    const index = await get('/fieldwork/llms.txt');
-    assert.ok(index.includes('https://docs.nickwelsh.me/fieldwork/docs/0.x'));
+    const markdown = await get('/formbraid/llms.mdx/docs/0.x/getting-started/quickstart/content.md');
+    assert.ok(markdown.includes('createFormbraid'));
+    const index = await get('/formbraid/llms.txt');
+    assert.ok(index.includes('https://docs.nickwelsh.me/formbraid/docs/0.x'));
 
-    const html = await get('/fieldwork/docs/0.x/getting-started/installation/');
+    const html = await get('/formbraid/docs/0.x/getting-started/installation/');
     assert.ok(html.includes('/apps/docs/content/docs/0.x/getting-started/installation.mdx'));
-    const stylesheet = /href="(?<stylesheet>\/fieldwork\/assets\/[^"]+\.css)"/u.exec(html)?.groups?.stylesheet;
+    const stylesheet = /href="(?<stylesheet>\/formbraid\/assets\/[^"]+\.css)"/u.exec(html)?.groups?.stylesheet;
     assert.ok(stylesheet !== undefined);
     await get(stylesheet);
-    const missing = await runtime.dispatchFetch(new URL('/fieldwork/does-not-exist', origin));
+    const missing = await runtime.dispatchFetch(new URL('/formbraid/does-not-exist', origin));
     assert.equal(missing.status, 404);
     const missingHtml = await missing.text();
     assert.ok(missingHtml.includes('Page not found'));

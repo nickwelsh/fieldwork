@@ -3,10 +3,10 @@ title: Field and form components
 description: Build accessible application-owned controls and register their literal component names.
 ---
 
-Fieldwork owns the form session and React contexts. Field components receive presentation metadata and subscribe to their own value, errors, and metadata:
+Formbraid owns the form session and React contexts. Field components receive presentation metadata and subscribe to their own value, errors, and metadata:
 
 ```tsx
-import { useFieldContext, type FieldProps } from '@fieldwork/react';
+import { useFieldContext, type FieldProps } from '@formbraid/react';
 import { useId } from 'react';
 
 export function TextField({ label, helpText, constraints }: FieldProps<string>) {
@@ -40,7 +40,7 @@ export function TextField({ label, helpText, constraints }: FieldProps<string>) 
 `setValue` accepts a value or an updater. `touch()` records interaction; `meta` exposes `isTouched`, `isDirty`, and `isValid`. Errors are normalized strings.
 
 ```tsx
-import { useFormContext } from '@fieldwork/react';
+import { useFormContext } from '@formbraid/react';
 
 export function SubmitButton({ label = 'Save' }: { label?: string }) {
     const form = useFormContext();
@@ -59,13 +59,13 @@ export function SubmitButton({ label = 'Save' }: { label?: string }) {
 Register the components directly, retaining their literal keys:
 
 ```ts
-import { createFieldwork } from '@fieldwork/react';
-import { inertia } from '@fieldwork/inertia';
+import { createFormbraid } from '@formbraid/react';
+import { inertia } from '@formbraid/inertia';
 import { TextField, CheckboxField } from './field-components';
 import { SubmitButton, FormErrors } from './form-components';
 import { fieldGroups } from './address-group';
 
-const fieldwork = createFieldwork({
+const formbraid = createFormbraid({
     fieldComponents: { TextField, CheckboxField },
     formComponents: { SubmitButton, FormErrors },
     fieldGroups,
@@ -73,8 +73,8 @@ const fieldwork = createFieldwork({
     submitComponent: 'SubmitButton',
 });
 
-export default fieldwork;
-export const { Form, useForm } = fieldwork;
+export default formbraid;
+export const { Form, useForm } = formbraid;
 ```
 
-Avoid annotating registries as broad `Record<string, ...>` types: literal keys power generated enums and typed bound components. Context hooks are exported by `@fieldwork/react`, so application context and hook-factory modules are unnecessary.
+Avoid annotating registries as broad `Record<string, ...>` types: literal keys power generated enums and typed bound components. Context hooks are exported by `@formbraid/react`, so application context and hook-factory modules are unnecessary.

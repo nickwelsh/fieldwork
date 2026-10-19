@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel\Tests\Fixtures;
+namespace Formbraid\Laravel\Tests\Fixtures;
 
 use Illuminate\Foundation\Http\FormRequest;
 

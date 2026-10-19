@@ -1,18 +1,18 @@
 /* oxlint-disable eslint/new-cap -- Effect uses capitalized functional Schema and Context constructors. */
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
-import { bindForm, defineForm } from '@fieldwork/core';
+import { bindForm, defineForm } from '@formbraid/core';
 import type {
     FieldDefinition,
     OperationContext,
     SubmissionContext,
     SubmissionResult,
     UploadProgress,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Context, Effect, Schema, SchemaGetter } from 'effect';
 import { Activity, StrictMode, Suspense, startTransition, useLayoutEffect, useRef, useState } from 'react';
-import { createFieldwork } from './create-fieldwork.js';
+import { createFormbraid } from './create-formbraid.js';
 import { useFieldContext, useFormContext } from './hooks.js';
 import { withFieldGroup } from './group.js';
 import type { FieldProps } from './types.js';
@@ -117,7 +117,7 @@ describe('owned React session lifecycle', () => {
                 </>
             );
         }
-        const local = createFieldwork({ fieldComponents: { Input }, formComponents: { Status } });
+        const local = createFormbraid({ fieldComponents: { Input }, formComponents: { Status } });
         render(
             <local.Form form={definition}>
                 {({ fields, components }) => (
@@ -143,7 +143,7 @@ describe('owned React session lifecycle', () => {
         const firstOperation = vi.fn<() => Effect.Effect<string>>(() => Effect.succeed('old'));
         const latestOperation = vi.fn<() => Effect.Effect<string>>(() => Effect.succeed('new'));
         const result = vi.fn<(value: SubmissionResult<string>) => void>();
-        const local = createFieldwork({
+        const local = createFormbraid({
             fieldComponents: { Input: SimpleInput },
             formComponents: { Submit },
             submitComponent: 'Submit',
@@ -188,7 +188,7 @@ describe('owned React session lifecycle', () => {
             }, [form, revision]);
             return null;
         }
-        const local = createFieldwork({ fieldComponents: {}, formComponents: { AutoSubmit } });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: { AutoSubmit } });
         function Harness({ revision }: { readonly revision: number }) {
             const instance = local.useForm(definition, {
                 operation: (_data, context) => {
@@ -239,7 +239,7 @@ describe('owned React session lifecycle', () => {
         expect.hasAssertions();
         const progress = vi.fn<(value: UploadProgress) => void>();
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         function Harness() {
             const instance = local.useForm(definition, {
                 operation: progressOperation,
@@ -264,7 +264,7 @@ describe('owned React session lifecycle', () => {
         expect.hasAssertions();
         const progress = vi.fn<(value: UploadProgress) => void>();
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         function Harness() {
             const activeContext = useRef<OperationContext | null>(null);
             const instance = local.useForm(definition, {
@@ -298,7 +298,7 @@ describe('owned React session lifecycle', () => {
         expect.hasAssertions();
         const progress = vi.fn<(value: UploadProgress) => void>();
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         function Harness() {
             const instance = local.useForm(definition, {
                 operation: progressOperation,
@@ -332,7 +332,7 @@ describe('owned React session lifecycle', () => {
             }, [form, revision]);
             return null;
         }
-        const local = createFieldwork({ fieldComponents: {}, formComponents: { AutoSubmit } });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: { AutoSubmit } });
         const nativeDefinitionFor = (revision: number) => {
             const decode = SchemaGetter.transformEffect((value: string) =>
                 Effect.gen(function* decodeValue() {
@@ -397,7 +397,7 @@ describe('owned React session lifecycle', () => {
             }
             return null;
         }
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         function Harness() {
             const [revision, setRevision] = useState(1);
             const instance = local.useForm(definition, {
@@ -445,7 +445,7 @@ describe('owned React session lifecycle', () => {
             // Reveal is controlled by the next committed props, not by this unresolved render.
         });
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         function Harness({ suspended }: { readonly suspended: boolean }) {
             const instance = local.useForm(definition, {
                 operation: progressOperation,
@@ -502,7 +502,7 @@ describe('owned React session lifecycle', () => {
         expect.hasAssertions();
         const progress = vi.fn<() => void>();
         const result = vi.fn<(value: SubmissionResult<string>) => void>();
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
         function Harness() {
             const instance = local.useForm(definition, {
@@ -569,7 +569,7 @@ describe('owned React session lifecycle', () => {
             }, [form]);
             return null;
         }
-        const local = createFieldwork({ fieldComponents: {}, formComponents: { AutoSubmit } });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: { AutoSubmit } });
         function Harness() {
             const instance = local.useForm(definition, { operation, onProgress: progress, onResult: result });
             return <local.Form form={instance}>{({ components }) => <components.AutoSubmit />}</local.Form>;
@@ -606,7 +606,7 @@ describe('owned React session lifecycle', () => {
             }, [form]);
             return null;
         }
-        const local = createFieldwork({ fieldComponents: {}, formComponents: { AutoSubmit } });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: { AutoSubmit } });
         function Harness() {
             const instance = local.useForm(definition, { run, onResult: result });
             return <local.Form form={instance}>{({ components }) => <components.AutoSubmit />}</local.Form>;
@@ -622,7 +622,7 @@ describe('owned React session lifecycle', () => {
 
     it('preserves field focus and drafts across immutable metadata updates and reordering', async () => {
         expect.hasAssertions();
-        const local = createFieldwork({ fieldComponents: { Input: SimpleInput }, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: { Input: SimpleInput }, formComponents: {} });
         const view = render(<local.Form form={definition} />);
         const input = screen.getByLabelText('first');
         await userEvent.setup().type(input, 'Edited');
@@ -670,7 +670,7 @@ describe('owned React session lifecycle', () => {
                 </group.Field>
             ),
         });
-        const local = createFieldwork({
+        const local = createFormbraid({
             fieldComponents: { Input: SimpleInput },
             formComponents: {},
             fieldGroups: { Group },
@@ -728,7 +728,7 @@ describe('owned React session lifecycle', () => {
                 </group.Field>
             ),
         });
-        const local = createFieldwork({
+        const local = createFormbraid({
             fieldComponents: { Input: SimpleInput },
             formComponents: {},
             fieldGroups: { Group },
@@ -761,7 +761,7 @@ describe('owned React session lifecycle', () => {
             ),
         );
         const result = vi.fn<(value: SubmissionResult<string>) => void>();
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
         function Harness() {
             const instance = local.useForm(definition, { operation, onResult: result });
@@ -795,7 +795,7 @@ describe('owned React session lifecycle', () => {
         expect.hasAssertions();
         const active: { context?: SubmissionContext; finish?: (value: SubmissionResult) => void } = {};
         const result = vi.fn<(value: SubmissionResult) => void>();
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { submit?: () => Promise<SubmissionResult> } = {};
         function Harness() {
             const instance = local.useForm(bindForm(definition, { driver: 'test', binding: null }), {
@@ -863,7 +863,7 @@ describe('owned React session lifecycle', () => {
                 </current.Subscribe>
             ),
         });
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { edit?: () => void; submit?: () => Promise<SubmissionResult> } = {};
         // A reusable group is also usable directly with an owned form instance.
         const Group = group;
@@ -921,7 +921,7 @@ describe('owned React session lifecycle', () => {
         const reported = vi.fn<(error: unknown) => void>();
         vi.stubGlobal('reportError', reported);
         const callbackError = new Error('Application callback failed');
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
         function Harness() {
             const instance = local.useForm(definition, {
@@ -980,7 +980,7 @@ describe('owned React session lifecycle', () => {
                     return Effect.sync(finalized);
                 }),
         });
-        const local = createFieldwork({ fieldComponents: {}, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: {}, formComponents: {} });
         const holder: { submit?: () => Promise<SubmissionResult<string, never>> } = {};
         function Harness() {
             const instance = local.useForm(nativeDefinition, {
@@ -1015,13 +1015,13 @@ describe('owned React session lifecycle', () => {
             fields: { 'toString.value': field('toString.value') },
             groups: {},
         });
-        const local = createFieldwork({ fieldComponents: { Input: SimpleInput }, formComponents: {} });
+        const local = createFormbraid({ fieldComponents: { Input: SimpleInput }, formComponents: {} });
         render(<local.Form form={nested}>{({ fields }) => <fields.toString.value />}</local.Form>);
         expect(screen.getByLabelText('toString.value').getAttribute('value')).toBe('draft');
         const missing = {
             ...nested,
             fields: { 'toString.value': { ...field('toString.value'), component: 'toString' } },
         };
-        expect(() => render(<local.Form form={missing} />)).toThrow('not registered with Fieldwork');
+        expect(() => render(<local.Form form={missing} />)).toThrow('not registered with Formbraid');
     });
 });

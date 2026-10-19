@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vite-plus/test';
-import type { Extraction, FieldDefinition, JsonValue } from '@fieldwork/core';
+import type { Extraction, FieldDefinition, JsonValue } from '@formbraid/core';
 import type { RegistryManifest, TypeShape } from './contracts.js';
 import { emitReact } from './emit.js';
 import { inspectRegistries } from './inspect.js';
@@ -10,7 +10,7 @@ import { inspectRegistries } from './inspect.js';
 vi.setConfig({ testTimeout: 10_000 });
 
 async function inspectSlots(types: Readonly<Record<string, string>>): Promise<Readonly<Record<string, TypeShape>>> {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-slot-types-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-slot-types-'));
     try {
         await writeFile(
             path.join(root, 'tsconfig.json'),
@@ -19,7 +19,7 @@ async function inspectSlots(types: Readonly<Record<string, string>>): Promise<Re
         await writeFile(
             path.join(root, 'forms.ts'),
             `
-function createFieldwork(options: unknown) { return options; }
+function createFormbraid(options: unknown) { return options; }
 function withFieldGroup<T>(options: { defaultValues: T; props: object }) { return (props: object) => null; }
 type Box<T> = { stable: string; optional?: T; explicit?: T | undefined };
 type Recursive = { items: Recursive[] };
@@ -37,7 +37,7 @@ ${Object.entries(types)
             `declare const defaults${name}: { value: ${type} }; const ${name} = withFieldGroup({ defaultValues: defaults${name}, props: {} });`,
     )
     .join('\n')}
-export default createFieldwork({ fieldComponents: {}, formComponents: {}, fieldGroups: { ${Object.keys(types).join(', ')} } });
+export default createFormbraid({ fieldComponents: {}, formComponents: {}, fieldGroups: { ${Object.keys(types).join(', ')} } });
 `,
         );
         return Object.fromEntries(

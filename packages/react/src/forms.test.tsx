@@ -1,20 +1,20 @@
 /* oxlint-disable eslint/new-cap -- Effect Schema uses capitalized functional schema constructors. */
 import { vi, afterEach, describe, expect, it } from 'vite-plus/test';
 
-import { bindForm, defineSubmissionDriver, definitionSchema, isRecord } from '@fieldwork/core';
-import type { EffectRunner, SubmissionContext, SubmissionDriver, SubmissionResult } from '@fieldwork/core';
+import { bindForm, defineSubmissionDriver, definitionSchema, isRecord } from '@formbraid/core';
+import type { EffectRunner, SubmissionContext, SubmissionDriver, SubmissionResult } from '@formbraid/core';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { createFieldwork } from './create-fieldwork.js';
-import { fieldComponents } from '@fieldwork/example/field-components.js';
+import { createFormbraid } from './create-formbraid.js';
+import { fieldComponents } from '@formbraid/example/field-components.js';
 import { Effect, Schema, SchemaGetter } from 'effect';
-import { formComponents } from '@fieldwork/example/form-components.js';
-import { fieldGroups } from '@fieldwork/example/address-group.js';
-import { Form } from '@fieldwork/example/forms.js';
-import { update } from '@fieldwork/example/generated/actions/profile.js';
-import { UpdateProfileRequest } from '@fieldwork/example/generated/forms/UpdateProfileRequest.js';
-import type { UpdateProfileRequestValues } from '@fieldwork/example/generated/forms/UpdateProfileRequest.js';
+import { formComponents } from '@formbraid/example/form-components.js';
+import { fieldGroups } from '@formbraid/example/address-group.js';
+import { Form } from '@formbraid/example/forms.js';
+import { update } from '@formbraid/example/generated/actions/profile.js';
+import { UpdateProfileRequest } from '@formbraid/example/generated/forms/UpdateProfileRequest.js';
+import type { UpdateProfileRequestValues } from '@formbraid/example/generated/forms/UpdateProfileRequest.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 
@@ -232,7 +232,7 @@ describe('bound React forms', () => {
                     }),
             ),
         );
-        const local = createFieldwork({
+        const local = createFormbraid({
             fieldComponents,
             formComponents,
             fieldGroups,

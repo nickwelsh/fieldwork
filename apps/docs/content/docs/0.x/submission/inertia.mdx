@@ -8,17 +8,17 @@ The runtime adapter submits validated values using Inertia's visit lifecycle. It
 ## Register the runtime
 
 ```ts
-import { inertia } from '@fieldwork/inertia';
+import { inertia } from '@formbraid/inertia';
 
 const submissions = {
     web: inertia({ visit: { preserveScroll: true, errorBag: 'profile' } }),
 };
 ```
 
-Pass `submissions` to `createFieldwork`. The key `web` must match the key in the generator configuration or descriptor. For a form without a generated action, use `bindForm`:
+Pass `submissions` to `createFormbraid`. The key `web` must match the key in the generator configuration or descriptor. For a form without a generated action, use `bindForm`:
 
 ```ts
-import { bindForm } from '@fieldwork/core';
+import { bindForm } from '@formbraid/core';
 
 const profileForm = bindForm(definition, {
     driver: 'web',
@@ -52,7 +52,7 @@ Use `onResult` for the settled outcome and `onProgress` for uploads:
 | `failure`   | An expected transport or payload failure     |
 | `defect`    | An unexpected execution defect               |
 
-Fieldwork manages the visit's method, data, completion callbacks, cancellation, errors, and upload progress. Configure other options through `visit`. An optional `router` permits an injected router that follows Inertia's lifecycle.
+Formbraid manages the visit's method, data, completion callbacks, cancellation, errors, and upload progress. Configure other options through `visit`. An optional `router` permits an injected router that follows Inertia's lifecycle.
 
 ## Errors and uploads
 

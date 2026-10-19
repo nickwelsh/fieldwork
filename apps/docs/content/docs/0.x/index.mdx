@@ -1,9 +1,9 @@
 ---
-title: Fieldwork
+title: Formbraid
 description: Application-owned React forms from Laravel FormRequests and portable definitions.
 ---
 
-Fieldwork connects backend form metadata to the components your application already owns. Laravel FormRequests describe values, validation constraints, presentation hints, and groups. The generator checks those declarations against your React registry and emits typed definitions and route actions. Effect 4 manages each form's state, validation, submission, and cancellation.
+Formbraid connects backend form metadata to the components your application already owns. Laravel FormRequests describe values, validation constraints, presentation hints, and groups. The generator checks those declarations against your React registry and emits typed definitions and route actions. Effect 4 manages each form's state, validation, submission, and cancellation.
 
 You can also write definitions directly, consume a portable descriptor from another library, or run a session without React. Generation and Laravel are optional at runtime.
 
@@ -18,10 +18,10 @@ You can also write definitions directly, consume a portable descriptor from anot
 
 Register [field and form components](./react/components.mdx), choose an [automatic or custom layout](./react/forms.mdx), and combine related fields with [composite groups](./react/groups.mdx). Your application owns HTML, accessibility, styling, and any third-party widgets.
 
-Fieldwork validates on submission. [Client constraints](./validation.mdx) provide feedback; Laravel remains responsible for authoritative validation and authorization. Use [Inertia](./submission/inertia.mdx), [Inertia Effect](./submission/effect.mdx), a [callback](./submission/callbacks.mdx), or a typed [Effect operation](./advanced/headless.mdx) to execute a submission.
+Formbraid validates on submission. [Client constraints](./validation.mdx) provide feedback; Laravel remains responsible for authoritative validation and authorization. Use [Inertia](./submission/inertia.mdx), [Inertia Effect](./submission/effect.mdx), a [callback](./submission/callbacks.mdx), or a typed [Effect operation](./advanced/headless.mdx) to execute a submission.
 
 ## Current release line
 
-These guides describe the `0.x` API and Effect `4.0.2`. The packages in this repository are currently local and have not been published to npm or Packagist. The former hook-factory API is replaced by `createFieldwork`; applications import context hooks directly from `@fieldwork/react`.
+These guides describe the `0.x` API and Effect `4.0.2`. The packages in this repository are currently local and have not been published to npm or Packagist. The former hook-factory API is replaced by `createFormbraid`; applications import context hooks directly from `@formbraid/react`.
 
 See [development](./development.mdx) to run the example, verify a change, or rebuild this documentation.

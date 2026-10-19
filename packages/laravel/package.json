@@ -1,7 +1,17 @@
 {
-    "name": "@fieldwork/laravel",
+    "name": "@formbraid/laravel",
     "version": "0.1.0",
+    "description": "Node generator integration for Laravel FormRequests.",
+    "homepage": "https://docs.nickwelsh.me/formbraid/",
+    "bugs": {
+        "url": "https://github.com/nickwelsh/formbraid/issues"
+    },
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nickwelsh/formbraid.git",
+        "directory": "packages/laravel"
+    },
     "files": [
         "dist",
         "bin"
@@ -13,18 +23,24 @@
             "import": "./dist/generator.js"
         }
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "vp pack"
     },
     "dependencies": {
-        "@fieldwork/core": "workspace:*",
+        "@formbraid/core": "workspace:*",
         "effect": "4.0.2"
     },
     "devDependencies": {
         "@effect/platform-node": "4.0.2",
-        "@fieldwork/generator": "workspace:*"
+        "@formbraid/generator": "workspace:*"
     },
     "peerDependencies": {
-        "@fieldwork/generator": "^0.1.0"
+        "@formbraid/generator": "^0.1.0"
+    },
+    "engines": {
+        "node": ">=24.11.0"
     }
 }

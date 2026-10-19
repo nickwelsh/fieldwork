@@ -6,14 +6,14 @@ import { format } from 'oxfmt';
 import { Deferred, Effect, Result, Schema } from 'effect';
 import { NodeServices } from '@effect/platform-node';
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { definitionSchema, parseExtraction, parseExtractionEffect, parseFormDescriptor } from '@fieldwork/core';
-import { UpdateProfileRequest } from '@fieldwork/example/generated/forms/UpdateProfileRequest.js';
-import { update } from '@fieldwork/example/generated/actions/profile.js';
-import type { Extraction, FieldDefinition, JsonValue } from '@fieldwork/core';
-import type { FieldworkConfig, GeneratedFile, RegistryManifest, TypeShape } from './contracts.js';
+import { definitionSchema, parseExtraction, parseExtractionEffect, parseFormDescriptor } from '@formbraid/core';
+import { UpdateProfileRequest } from '@formbraid/example/generated/forms/UpdateProfileRequest.js';
+import { update } from '@formbraid/example/generated/actions/profile.js';
+import type { Extraction, FieldDefinition, JsonValue } from '@formbraid/core';
+import type { FormbraidConfig, GeneratedFile, RegistryManifest, TypeShape } from './contracts.js';
 import { emitReact, emitActions } from './emit.js';
-import { laravel, exportPhp } from '@fieldwork/laravel/generator';
-import { inertia } from '@fieldwork/inertia/generator';
+import { laravel, exportPhp } from '@formbraid/laravel/generator';
+import { inertia } from '@formbraid/inertia/generator';
 import { defineConfig, defineSubmission, GenerationError } from './contracts.js';
 import type { GenerateOptions } from './generate.js';
 import { generate } from './generate.js';
@@ -41,7 +41,7 @@ async function runNode<A, E>(effect: Effect.Effect<A, E, NodeEnvironment>) {
     return await Effect.runPromise(Effect.provide(effect, NodeServices.layer));
 }
 
-async function runGeneration<E>(config: FieldworkConfig<E, NodeEnvironment>, options: GenerateOptions) {
+async function runGeneration<E>(config: FormbraidConfig<E, NodeEnvironment>, options: GenerateOptions) {
     return await runNode(generate(config, options));
 }
 
@@ -277,10 +277,10 @@ describe('generator contracts', () => {
 
     it('follows setup and group aliases and rejects incomplete or widened direct registries', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-inspection-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-inspection-'));
         const module = path.join(root, 'forms.ts');
         const declarations = `
-function createFieldwork(options: unknown) { return options; }
+function createFormbraid(options: unknown) { return options; }
 function withFieldGroup(options: {
     defaultValues: { line1: string; line2: string | null; attachment: File | null; metadata: Record<string, number>; pair: [number, number] };
     props: { label: string };
@@ -296,7 +296,7 @@ throw new Error('UI modules must not execute');
                 module,
                 `${declarations}
 const registries = { TextField };
-const setup = createFieldwork({ fieldComponents: registries, formComponents: {}, fieldGroups: { AddressAlias: AddressAlias } });
+const setup = createFormbraid({ fieldComponents: registries, formComponents: {}, fieldGroups: { AddressAlias: AddressAlias } });
 export default setup;`,
             );
             const inspected = inspectRegistries('forms.ts', root);
@@ -310,18 +310,18 @@ export default setup;`,
                     pair: { kind: 'array', items: { kind: 'number' }, tuple: true },
                 },
             });
-            await writeFile(module, `${declarations} export default createFieldwork({ formComponents: {} });`);
+            await writeFile(module, `${declarations} export default createFormbraid({ formComponents: {} });`);
             expect(() => inspectRegistries('forms.ts', root)).toThrow('must register fieldComponents');
             await writeFile(
                 module,
                 `${declarations}
 const fields: Record<string, typeof TextField> = { TextField };
-export default createFieldwork({ fieldComponents: fields, formComponents: {} });`,
+export default createFormbraid({ fieldComponents: fields, formComponents: {} });`,
             );
             expect(() => inspectRegistries('forms.ts', root)).toThrow('must retain literal component keys');
             await writeFile(
                 module,
-                `${declarations} export default createFieldwork({ fieldComponents: { BadField: 42 }, formComponents: {} });`,
+                `${declarations} export default createFormbraid({ fieldComponents: { BadField: 42 }, formComponents: {} });`,
             );
             expect(() => inspectRegistries('forms.ts', root)).toThrow('must be a callable React component');
         } finally {
@@ -496,16 +496,16 @@ export default createFieldwork({ fieldComponents: fields, formComponents: {} });
             },
         };
         expect(generateWith(containerRegistry(shape), nested)).toHaveLength(1);
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-nested-slots-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-nested-slots-'));
         try {
             await writeFile(
                 path.join(root, 'forms.ts'),
                 `
-function createFieldwork(options: unknown) { return options; }
+function createFormbraid(options: unknown) { return options; }
 function withFieldGroup<T>(options: { defaultValues: T; props: object }) { return (props: object) => null; }
 const defaults: { city: string; members: Array<{ active: boolean }> } = { city: '', members: [] };
 const Container = withFieldGroup({ defaultValues: { value: defaults }, props: {} });
-export default createFieldwork({ fieldComponents: {}, formComponents: {}, fieldGroups: { Container } });
+export default createFormbraid({ fieldComponents: {}, formComponents: {}, fieldGroups: { Container } });
 `,
             );
             const inspected = inspectRegistries('forms.ts', root);
@@ -562,7 +562,7 @@ export default createFieldwork({ fieldComponents: {}, formComponents: {}, fieldG
 
     it('generates parent and child bindings that compile through the public React API', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-parent-child-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-parent-child-'));
         const generated: Extraction = {
             ...extraction,
             forms: [
@@ -585,8 +585,8 @@ export default createFieldwork({ fieldComponents: {}, formComponents: {}, fieldG
                 consumer,
                 `
 import { ParentChild } from './ParentChild.js';
-import { createFieldwork } from '@fieldwork/react';
-const { Form } = createFieldwork({
+import { createFormbraid } from '@formbraid/react';
+const { Form } = createFormbraid({
     fieldComponents: { TextField: (props: { label: string; constraints: unknown }) => null },
     formComponents: {},
 });
@@ -603,8 +603,8 @@ export const View = () => <Form form={ParentChild}>{({ fields }) => <><fields.pr
                 module: ts.ModuleKind.ESNext,
                 moduleResolution: ts.ModuleResolutionKind.Bundler,
                 paths: {
-                    '@fieldwork/core': [path.resolve('packages/core/src/index.ts')],
-                    '@fieldwork/react': [path.resolve('packages/react/src/index.ts')],
+                    '@formbraid/core': [path.resolve('packages/core/src/index.ts')],
+                    '@formbraid/react': [path.resolve('packages/react/src/index.ts')],
                     react: [path.resolve('node_modules/@types/react')],
                     'react/jsx-runtime': [path.resolve('node_modules/@types/react/jsx-runtime.d.ts')],
                 },
@@ -621,14 +621,14 @@ export const View = () => <Form form={ParentChild}>{({ fields }) => <><fields.pr
 
     it('compiles extracted fixed arrays and bracket aliases while preserving numeric object keys', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-fixed-values-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-fixed-values-'));
         try {
             const fixture = path.join(root, 'extract.php');
             await writeFile(
                 fixture,
                 `<?php
 require ${JSON.stringify(path.resolve('packages/laravel/vendor/autoload.php'))};
-$config = require ${JSON.stringify(path.resolve('packages/laravel/config/fieldwork.php'))};
+$config = require ${JSON.stringify(path.resolve('packages/laravel/config/formbraid.php'))};
 $config['fields']['types']['array'] = 'TextField';
 $config['fields']['types']['integer'] = 'TextField';
 class FixedValues {
@@ -637,7 +637,7 @@ class FixedValues {
             'implicit.0.name' => ['string'], 'codes.01.name' => ['string'], 'codes.1.age' => ['integer']];
     }
 }
-$extracted = (new \\Fieldwork\\Laravel\\RequestExtractor($config))->extract(new FixedValues);
+$extracted = (new \\Formbraid\\Laravel\\RequestExtractor($config))->extract(new FixedValues);
 echo json_encode(['version' => 1, 'forms' => [$extracted['form']], 'diagnostics' => $extracted['diagnostics']], JSON_THROW_ON_ERROR);
 `,
             );
@@ -663,7 +663,7 @@ echo json_encode(['version' => 1, 'forms' => [$extracted['form']], 'diagnostics'
                 consumer,
                 `
 import { FixedValues } from './FixedValues.js';
-import { createFormSession } from '@fieldwork/core';
+import { createFormSession } from '@formbraid/core';
 const form = createFormSession({ definition: FixedValues });
 form.append('rows', { name: 'next' });
 form.append('rows', { age: 42 });
@@ -689,7 +689,7 @@ export { literal, other };
                 target: ts.ScriptTarget.ESNext,
                 module: ts.ModuleKind.ESNext,
                 moduleResolution: ts.ModuleResolutionKind.Bundler,
-                paths: { '@fieldwork/core': [path.resolve('packages/core/src/index.ts')] },
+                paths: { '@formbraid/core': [path.resolve('packages/core/src/index.ts')] },
             });
             expect(
                 ts
@@ -706,14 +706,14 @@ export { literal, other };
 
     it('translates Laravel collection options and associative rows into compilable native forms', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-laravel-arrays-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-laravel-arrays-'));
         try {
             const fixture = path.join(root, 'extract.php');
             await writeFile(
                 fixture,
                 `<?php
 require ${JSON.stringify(path.resolve('packages/laravel/vendor/autoload.php'))};
-$config = require ${JSON.stringify(path.resolve('packages/laravel/config/fieldwork.php'))};
+$config = require ${JSON.stringify(path.resolve('packages/laravel/config/formbraid.php'))};
 $config['fields']['types']['array'] = 'TextField';
 $config['fields']['types']['integer'] = 'TextField';
 class CollectionValues {
@@ -730,7 +730,7 @@ $factory = new \\Illuminate\\Validation\\Factory(new \\Illuminate\\Translation\\
 if (! $factory->make(['colors' => ['red'], 'ids' => [1, '2'], 'rows' => [['name' => 'Nick']], 'profile' => ['name' => 'Nick'], 'optional' => null], $request->rules())->passes()) {
     throw new Exception('The native regression payload must also pass Laravel validation.');
 }
-$extracted = (new \\Fieldwork\\Laravel\\RequestExtractor($config))->extract($request);
+$extracted = (new \\Formbraid\\Laravel\\RequestExtractor($config))->extract($request);
 echo json_encode(['version' => 1, 'forms' => [$extracted['form']], 'diagnostics' => $extracted['diagnostics']], JSON_THROW_ON_ERROR);
 `,
             );
@@ -759,7 +759,7 @@ echo json_encode(['version' => 1, 'forms' => [$extracted['form']], 'diagnostics'
                 consumer,
                 `
 import { CollectionValues } from './CollectionValues.js';
-import { createFormSession } from '@fieldwork/core';
+import { createFormSession } from '@formbraid/core';
 const form=createFormSession({definition:CollectionValues});
 form.append('colors','red');
 form.append('ids',1);
@@ -787,7 +787,7 @@ export {nullableRead};
                 target: ts.ScriptTarget.ESNext,
                 module: ts.ModuleKind.ESNext,
                 moduleResolution: ts.ModuleResolutionKind.Bundler,
-                paths: { '@fieldwork/core': [path.resolve('packages/core/src/index.ts')] },
+                paths: { '@formbraid/core': [path.resolve('packages/core/src/index.ts')] },
             });
             expect(
                 ts
@@ -927,7 +927,7 @@ export {nullableRead};
 
     it('bootstraps PHP enums before extraction and check mode detects drift without writing', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-generation-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-generation-'));
         const enumPath = path.join(root, 'FormField.php');
         const extract = vi.fn<() => Effect.Effect<Extraction>>(() =>
             Effect.promise(async () => {
@@ -970,7 +970,7 @@ export {nullableRead};
 
     it('namespaces schema sources and executors and rejects providers for unknown sources', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-multiple-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-multiple-'));
         const config = multipleConfig();
         try {
             const generated = await runGeneration(config, { root });
@@ -997,14 +997,14 @@ export {nullableRead};
 
     it('detects obsolete generated actions in check mode and removes them while preserving application files', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-obsolete-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-obsolete-'));
         const config = multipleConfig();
         try {
             await runGeneration(config, { root });
             const handwritten = path.join(root, 'actions/handwritten.ts');
             await writeFile(handwritten, '// Application action');
             const outside = path.join(root, 'outside.ts');
-            await writeFile(outside, '// Generated by Fieldwork.\nexport const outside = true;');
+            await writeFile(outside, '// Generated by Formbraid.\nexport const outside = true;');
             await symlink(outside, path.join(root, 'actions/link.ts'));
             await symlink(path.dirname(outside), path.join(root, 'actions/linked-directory'));
             const next = { ...config, submissions: { web: config.submissions.web } };
@@ -1024,7 +1024,7 @@ export {nullableRead};
 
     it('reads backend enum targets before missing enum case mappings can bootstrap', async () => {
         expect.hasAssertions();
-        const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-enums-'));
+        const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-enums-'));
         const backend = laravel();
         const extract = vi.fn<() => Effect.Effect<Extraction>>(() =>
             Effect.promise(async () => {
@@ -1033,7 +1033,7 @@ export {nullableRead};
                         'php',
                         [
                             '-r',
-                            "require 'app/Enums/Fields.php'; $config = require 'config/fieldwork.php'; echo $config['fields']['types']['string']->value;",
+                            "require 'app/Enums/Fields.php'; $config = require 'config/formbraid.php'; echo $config['fields']['types']['string']->value;",
                         ],
                         root,
                     ),
@@ -1054,7 +1054,7 @@ export {nullableRead};
                 JSON.stringify({ autoload: { 'psr-4': { 'App\\': 'app/' } } }),
             );
             await writeFile(
-                path.join(root, 'config/fieldwork.php'),
+                path.join(root, 'config/formbraid.php'),
                 `<?php
 use App\\Enums\\Fields;
 return ['enums' => ['fields' => Fields::class], 'fields' => ['types' => ['string' => Fields::TextField]]];`,

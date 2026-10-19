@@ -3,7 +3,7 @@
 Run the headless benchmark from the repository root:
 
 ```sh
-node --import tsx benchmarks/form-session.ts --output=/tmp/fieldwork-session.json
+node --import tsx benchmarks/form-session.ts --output=/tmp/formbraid-session.json
 ```
 
 For mounted React measurements, build the production example and serve its output:

@@ -9,7 +9,7 @@ import type {
     VisitOptions,
     VisitOutcome,
 } from '@inertiajs/core';
-import type { SubmissionContext, SubmissionResult, UploadProgress } from '@fieldwork/core';
+import type { SubmissionContext, SubmissionResult, UploadProgress } from '@formbraid/core';
 import { inertia } from './effect.js';
 import type { InertiaEffectOptions, InertiaEffectRouter } from './effect.js';
 

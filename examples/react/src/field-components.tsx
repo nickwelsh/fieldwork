@@ -1,5 +1,5 @@
-import type { FieldProps } from '@fieldwork/react';
-import { useFieldContext } from '@fieldwork/react';
+import type { FieldProps } from '@formbraid/react';
+import { useFieldContext } from '@formbraid/react';
 import { useId } from 'react';
 
 function message(error: unknown): string {

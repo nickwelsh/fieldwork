@@ -1,5 +1,5 @@
-import { createFieldwork, useFieldContext, useFormContext } from '@fieldwork/react';
-import type { FieldProps } from '@fieldwork/react';
+import { createFormbraid, useFieldContext, useFormContext } from '@formbraid/react';
+import type { FieldProps } from '@formbraid/react';
 import { Effect } from 'effect';
 import { createContext, useContext, useId, useLayoutEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -77,7 +77,7 @@ function BenchmarkSubscriptions() {
     );
 }
 
-const fieldwork = createFieldwork({
+const formbraid = createFormbraid({
     fieldComponents: { BenchmarkInput },
     formComponents: { BenchmarkSubscriptions },
     submitComponent: 'BenchmarkSubscriptions',
@@ -98,7 +98,7 @@ function BenchmarkSession({ fieldCount }: { readonly fieldCount: BenchmarkSize }
     const [definition] = useState(() => makeBenchmarkDefinition(fieldCount));
     // oxlint-disable-next-line react/hook-use-state -- Instrumentation is an external mutable recorder, not rendered state.
     const [measurements] = useState(makeMeasurements);
-    const instance = fieldwork.useForm(definition, { operation: () => Effect.void });
+    const instance = formbraid.useForm(definition, { operation: () => Effect.void });
     const [running, setRunning] = useState(false);
     const [target, setTarget] = useState<'first' | 'last'>(() =>
         new URLSearchParams(globalThis.location.search).get('target') === 'last' ? 'last' : 'first',
@@ -196,7 +196,7 @@ function BenchmarkSession({ fieldCount }: { readonly fieldCount: BenchmarkSize }
                 </output>
                 {result === null ? null : <pre aria-label="Benchmark results">{JSON.stringify(result, null, 2)}</pre>}
             </section>
-            <fieldwork.Form form={instance} className="benchmark-fields" aria-label={`${fieldCount} field benchmark`} />
+            <formbraid.Form form={instance} className="benchmark-fields" aria-label={`${fieldCount} field benchmark`} />
         </MeasurementsContext>
     );
 }
@@ -208,7 +208,7 @@ export function MassiveFormBenchmark() {
     });
     return (
         <main className="massive-benchmark">
-            <h1>Fieldwork massive form benchmark</h1>
+            <h1>Formbraid massive form benchmark</h1>
             <p>
                 Every field is mounted: nested contact records, generated field metadata, and one selected-value
                 subscription per contact. No virtualization.

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 // Read only the declarative enum targets. Loading all config would resolve enum cases before generation.
 $root = $argv[1] ?? throw new RuntimeException('An application root is required.');
-$file = $root.'/config/fieldwork.php';
+$file = $root.'/config/formbraid.php';
 if (! is_file($file)) {
-    throw new RuntimeException('Publish config/fieldwork.php before generating forms.');
+    throw new RuntimeException('Publish config/formbraid.php before generating forms.');
 }
 $tokens = token_get_all(file_get_contents($file));
 $imports = '';
@@ -57,7 +57,7 @@ foreach ($tokens as $index => $token) {
 }
 $targets = $expression === null ? [] : eval($imports.' return '.$expression.';');
 if (! is_array($targets)) {
-    throw new RuntimeException('fieldwork.enums must be a declarative array of class names.');
+    throw new RuntimeException('formbraid.enums must be a declarative array of class names.');
 }
 $composer = json_decode(file_get_contents($root.'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
 $prefixes = array_merge($composer['autoload']['psr-4'] ?? [], $composer['autoload-dev']['psr-4'] ?? []);
@@ -69,7 +69,7 @@ foreach ($targets as $registry => $class) {
     }
     if (! in_array($registry, ['fields', 'components', 'groups'], true) || ! is_string($class) ||
         ! preg_match('/^[A-Za-z_]\w*(?:\\\\[A-Za-z_]\w*)+$/', $class)) {
-        throw new RuntimeException('Invalid Fieldwork enum target.');
+        throw new RuntimeException('Invalid Formbraid enum target.');
     }
     $path = null;
     foreach ($prefixes as $prefix => $directory) {

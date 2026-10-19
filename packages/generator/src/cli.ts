@@ -6,7 +6,7 @@ import { Cause, Effect, Stdio, Stream } from 'effect';
 import { NodeRuntime, NodeServices } from '@effect/platform-node';
 import { createJiti } from 'jiti';
 import { GenerationError, generationStep } from './contracts.js';
-import type { FieldworkConfig } from './contracts.js';
+import type { FormbraidConfig } from './contracts.js';
 import { generate } from './generate.js';
 
 const main = Effect.gen(function* runCli() {
@@ -17,7 +17,7 @@ const main = Effect.gen(function* runCli() {
             args: [...args],
             allowPositionals: true,
             options: {
-                config: { type: 'string', default: 'fieldwork.config.ts' },
+                config: { type: 'string', default: 'formbraid.config.ts' },
                 check: { type: 'boolean', default: false },
             },
         }),
@@ -26,13 +26,13 @@ const main = Effect.gen(function* runCli() {
     if (!['generate', 'fields'].includes(command)) {
         yield* new GenerationError({
             stage: 'configuration',
-            message: 'Usage: fieldwork <generate|fields> [--config path] [--check]',
+            message: 'Usage: formbraid <generate|fields> [--config path] [--check]',
         });
     }
     const filename = path.resolve(values.config);
     const config = yield* Effect.tryPromise({
         try: async () =>
-            await createJiti(import.meta.url).import<FieldworkConfig<unknown, NodeServices.NodeServices>>(
+            await createJiti(import.meta.url).import<FormbraidConfig<unknown, NodeServices.NodeServices>>(
                 pathToFileURL(filename).href,
                 { default: true },
             ),

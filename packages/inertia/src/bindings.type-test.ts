@@ -1,5 +1,5 @@
 import { inertia } from './generator.js';
-import type { OperationProvider } from '@fieldwork/generator';
+import type { OperationProvider } from '@formbraid/generator';
 
 /** HTTP submission generators accept HTTP providers from any schema source. */
 export function ProviderTypeProof(mutations: OperationProvider<{ mutation: string }>) {

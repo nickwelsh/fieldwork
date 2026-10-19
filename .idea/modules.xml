@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/fieldwork.iml" filepath="$PROJECT_DIR$/.idea/fieldwork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/formbraid.iml" filepath="$PROJECT_DIR$/.idea/formbraid.iml" />
     </modules>
   </component>
 </project>

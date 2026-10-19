@@ -1,7 +1,17 @@
 {
-    "name": "@fieldwork/inertia",
+    "name": "@formbraid/inertia",
     "version": "0.1.0",
+    "description": "Inertia submission adapters for Formbraid forms.",
+    "homepage": "https://docs.nickwelsh.me/formbraid/",
+    "bugs": {
+        "url": "https://github.com/nickwelsh/formbraid/issues"
+    },
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nickwelsh/formbraid.git",
+        "directory": "packages/inertia"
+    },
     "files": [
         "dist"
     ],
@@ -20,23 +30,26 @@
             "import": "./dist/effect.js"
         }
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "vp pack"
     },
     "dependencies": {
-        "@fieldwork/core": "workspace:*",
+        "@formbraid/core": "workspace:*",
         "effect": "4.0.2"
     },
     "devDependencies": {
-        "@fieldwork/generator": "workspace:*",
+        "@formbraid/generator": "workspace:*",
         "@inertiajs/core": "file:vendor/inertia-core-effect-18db6eba25c95837.tgz"
     },
     "peerDependencies": {
-        "@fieldwork/generator": "^0.1.0",
+        "@formbraid/generator": "^0.1.0",
         "@inertiajs/core": "^3.7.1"
     },
     "peerDependenciesMeta": {
-        "@fieldwork/generator": {
+        "@formbraid/generator": {
             "optional": true
         }
     }

@@ -6,7 +6,7 @@ description: Use the Effect-native Inertia router and understand navigation outc
 For [Inertia Effect](https://github.com/nickwelsh/inertia-effect), change the runtime import to:
 
 ```ts
-import { inertia } from '@fieldwork/inertia/effect';
+import { inertia } from '@formbraid/inertia/effect';
 
 // Register under the same submission key used by your generated definitions.
 const submissions = {
@@ -14,11 +14,11 @@ const submissions = {
 };
 ```
 
-This adapter composes the application's `router.visitEffect` directly. It waits for navigation completion, including the page commit and renderer acknowledgement. Effectful visit callbacks run in the submitting context. The generator remains `@fieldwork/inertia/generator`: both adapters use the same HTTP bindings. An optional `router` accepts your own Inertia Effect router instance.
+This adapter composes the application's `router.visitEffect` directly. It waits for navigation completion, including the page commit and renderer acknowledgement. Effectful visit callbacks run in the submitting context. The generator remains `@formbraid/inertia/generator`: both adapters use the same HTTP bindings. An optional `router` accepts your own Inertia Effect router instance.
 
-Success and validation outcomes become Fieldwork success and field errors. Navigation failures and handled HTTP/network exceptions become submission failures; defects remain Effect defects. Prevented, interrupted, cancelled, discarded, and redirect outcomes become cancelled submissions. A redirect starts another navigation without awaiting its validation result, so it cannot confirm this submission's success. Aborting the submission signal or interrupting its fiber interrupts the native visit and releases the listener; Inertia can finish an already-started atomic history/render commit before cancellation completes.
+Success and validation outcomes become Formbraid success and field errors. Navigation failures and handled HTTP/network exceptions become submission failures; defects remain Effect defects. Prevented, interrupted, cancelled, discarded, and redirect outcomes become cancelled submissions. A redirect starts another navigation without awaiting its validation result, so it cannot confirm this submission's success. Aborting the submission signal or interrupting its fiber interrupts the native visit and releases the listener; Inertia can finish an already-started atomic history/render commit before cancellation completes.
 
-The fork retains the `@inertiajs/core` package name. Install it as that package so your application and Fieldwork share one router. At revision `18db6eba25c95837cf303745e46fc6201bc35177`, the repository does not contain built exports or a package preparation hook. A direct Git dependency therefore lacks executable exports. Until the fork adds a preparation hook, build and pack its core from Git:
+The fork retains the `@inertiajs/core` package name. Install it as that package so your application and Formbraid share one router. At revision `18db6eba25c95837cf303745e46fc6201bc35177`, the repository does not contain built exports or a package preparation hook. A direct Git dependency therefore lacks executable exports. Until the fork adds a preparation hook, build and pack its core from Git:
 
 ```sh
 git clone https://github.com/nickwelsh/inertia-effect.git
@@ -31,4 +31,4 @@ pnpm --dir packages/core pack --out /tmp/inertia-core-effect.tgz
 pnpm add /tmp/inertia-core-effect.tgz
 ```
 
-Use the matching forked React/Vue/Svelte adapter in your application too. Fieldwork's development dependency is a core tarball built from this pinned Git revision; its source and rebuild instructions are recorded alongside the archive. Ordinary Inertia applications keep the existing `@fieldwork/inertia` import.
+Use the matching forked React/Vue/Svelte adapter in your application too. Formbraid's development dependency is a core tarball built from this pinned Git revision; its source and rebuild instructions are recorded alongside the archive. Ordinary Inertia applications keep the existing `@formbraid/inertia` import.

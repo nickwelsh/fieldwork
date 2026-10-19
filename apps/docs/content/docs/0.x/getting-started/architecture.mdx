@@ -21,18 +21,18 @@ The descriptor identifies what to submit. The application chooses how to execute
 
 Submission captures the draft, decodes it, then executes a callback, driver, or operation in an interruptible Effect. Duplicate submissions share the active work. Success commits the submitted baseline; edits made during submission remain dirty. Cancellation suppresses late outcomes and progress.
 
-Keep one editable-value store. A producer or transport should not maintain another form draft synchronized with Fieldwork.
+Keep one editable-value store. A producer or transport should not maintain another form draft synchronized with Formbraid.
 
 ## Packages have separate responsibilities
 
 | Layer                  | Responsibility                                                              |
 | ---------------------- | --------------------------------------------------------------------------- |
-| `@fieldwork/core`      | Portable metadata, parsers, validation, route binding, and sessions         |
-| `@fieldwork/react`     | Component contexts, subscriptions, typed layouts, and groups                |
-| `@fieldwork/generator` | Inspection, source orchestration, emission, and output synchronization      |
-| `@fieldwork/laravel`   | Node subprocess integration, enum preparation, and HTTP operation discovery |
-| `fieldwork/laravel`    | PHP metadata builders and FormRequest extraction                            |
-| `@fieldwork/inertia`   | Runtime visits and generated HTTP bindings                                  |
+| `@formbraid/core`      | Portable metadata, parsers, validation, route binding, and sessions         |
+| `@formbraid/react`     | Component contexts, subscriptions, typed layouts, and groups                |
+| `@formbraid/generator` | Inspection, source orchestration, emission, and output synchronization      |
+| `@formbraid/laravel`   | Node subprocess integration, enum preparation, and HTTP operation discovery |
+| `formbraid/laravel`    | PHP metadata builders and FormRequest extraction                            |
+| `@formbraid/inertia`   | Runtime visits and generated HTTP bindings                                  |
 
 The portable runtime depends on Effect. Node filesystem and process services live at the generation boundary. Submission drivers do not need Laravel; source extraction does not need Inertia.
 

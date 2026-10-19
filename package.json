@@ -1,5 +1,5 @@
 {
-    "name": "fieldwork",
+    "name": "formbraid",
     "private": true,
     "type": "module",
     "scripts": {
@@ -9,12 +9,16 @@
         "test:php": "composer --working-dir=packages/laravel test",
         "format": "vp fmt",
         "dev": "vp -C examples/react dev",
-        "docs:dev": "pnpm --filter @fieldwork/docs dev",
-        "docs:build": "pnpm --filter @fieldwork/docs build",
-        "docs:check": "pnpm --filter @fieldwork/docs check",
-        "docs:api": "pnpm --filter @fieldwork/docs generate:api",
-        "generate:example": "vp exec tsx packages/generator/src/cli.ts generate --config examples/react/fieldwork.config.ts",
-        "benchmark:session": "node --import tsx benchmarks/form-session.ts"
+        "docs:dev": "pnpm --filter @formbraid/docs dev",
+        "docs:build": "pnpm --filter @formbraid/docs build",
+        "docs:check": "pnpm --filter @formbraid/docs check",
+        "docs:api": "pnpm --filter @formbraid/docs generate:api",
+        "generate:example": "vp exec tsx packages/generator/src/cli.ts generate --config examples/react/formbraid.config.ts",
+        "benchmark:session": "node --import tsx benchmarks/form-session.ts",
+        "packages:pack": "node scripts/npm-release.ts pack",
+        "packages:check": "node scripts/npm-release.ts check",
+        "packages:bootstrap": "node scripts/npm-release.ts bootstrap",
+        "packages:smoke": "node scripts/npm-release.ts smoke"
     },
     "devDependencies": {
         "@html-eslint/eslint-plugin-react": "^0.65.0",

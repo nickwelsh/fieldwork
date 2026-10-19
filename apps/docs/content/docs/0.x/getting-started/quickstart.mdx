@@ -37,7 +37,7 @@ The application must protect the route and authorize the record being changed. G
 
 ```tsx title="resources/js/forms/components.tsx"
 import { useId } from 'react';
-import { useFieldContext, useFormContext, type FieldProps } from '@fieldwork/react';
+import { useFieldContext, useFormContext, type FieldProps } from '@formbraid/react';
 
 export function TextField({ label, helpText }: FieldProps<string>) {
     const field = useFieldContext<string>();
@@ -80,30 +80,30 @@ export function SubmitButton({ label = 'Save' }: { label?: string }) {
 ## 3. Register components and submission
 
 ```ts title="resources/js/forms/index.ts"
-import { createFieldwork } from '@fieldwork/react';
-import { inertia } from '@fieldwork/inertia';
+import { createFormbraid } from '@formbraid/react';
+import { inertia } from '@formbraid/inertia';
 import { TextField, SubmitButton } from './components';
 
-const fieldwork = createFieldwork({
+const formbraid = createFormbraid({
     fieldComponents: { TextField },
     formComponents: { SubmitButton },
     submissions: { web: inertia({ visit: { preserveScroll: true } }) },
     submitComponent: 'SubmitButton',
 });
 
-export default fieldwork;
-export const { Form, useForm } = fieldwork;
+export default formbraid;
+export const { Form, useForm } = formbraid;
 ```
 
 Keep the default export and direct registry objects statically inspectable. Their literal keys become generated component enum cases and typed form bindings.
 
 ## 4. Configure generation
 
-```ts title="fieldwork.config.ts"
-import { defineConfig } from '@fieldwork/generator';
-import { laravel } from '@fieldwork/laravel/generator';
-import { react } from '@fieldwork/react/generator';
-import { inertia } from '@fieldwork/inertia/generator';
+```ts title="formbraid.config.ts"
+import { defineConfig } from '@formbraid/generator';
+import { laravel } from '@formbraid/laravel/generator';
+import { react } from '@formbraid/react/generator';
+import { inertia } from '@formbraid/inertia/generator';
 
 const app = laravel();
 
@@ -120,7 +120,7 @@ export default defineConfig({
 
 The published PHP config defaults to discovering `app/Http/Requests` and generating component enums in `App\Enums`. Configure only the component types your registry supports. This example needs a string mapping; an `email` mapping must not supply extra props unless your control declares them:
 
-```php title="config/fieldwork.php"
+```php title="config/formbraid.php"
 <?php
 
 return [
@@ -151,7 +151,7 @@ Route::patch('/profile', function (UpdateProfileRequest $request) {
 ```
 
 ```sh
-pnpm exec fieldwork generate
+pnpm exec formbraid generate
 ```
 
 Generation writes enums before extraction, then definitions and actions. The named `profile.update` route produces an `update` action in the `profile` module.
@@ -167,6 +167,6 @@ export function Profile({ user }: { user: { name: string; email: string } }) {
 }
 ```
 
-Without children, Fieldwork renders the fields in order and appends the submit component. On submit it validates the captured draft, performs the Inertia visit, and maps Laravel errors back to controls. For record routes, pass parameters to `update.form({ user: user.id })`.
+Without children, Formbraid renders the fields in order and appends the submit component. On submit it validates the captured draft, performs the Inertia visit, and maps Laravel errors back to controls. For record routes, pass parameters to `update.form({ user: user.id })`.
 
-Use [custom layouts](../react/forms.mdx), [groups](../react/groups.mdx), and [server validation](../validation.mdx) as the form grows. In CI, run `pnpm exec fieldwork generate --check` to detect stale generated files.
+Use [custom layouts](../react/forms.mdx), [groups](../react/groups.mdx), and [server validation](../validation.mdx) as the form grows. In CI, run `pnpm exec formbraid generate --check` to detect stale generated files.

@@ -6,8 +6,8 @@ namespace Example;
 
 use Example\Enums\FormField;
 use Example\Enums\FormGroup;
-use Fieldwork\Laravel\Field;
-use Fieldwork\Laravel\FieldGroup;
+use Formbraid\Laravel\Field;
+use Formbraid\Laravel\FieldGroup;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class UpdateProfileRequest extends FormRequest
