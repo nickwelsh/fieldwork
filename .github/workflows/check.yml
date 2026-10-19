@@ -24,13 +24,12 @@ jobs:
           php-version: '8.4'
           tools: composer
           coverage: none
-      - run: npm install --global vite-plus@0.3.0
-      - run: vp install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: composer install --working-dir=packages/laravel --no-interaction --prefer-dist
-      - run: vp run build
-      - run: vp check
-      - run: vp exec tsc --noEmit
-      - run: vp test run
+      - run: pnpm exec vp run build
+      - run: pnpm exec vp check
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm exec vp test run
       - run: node packages/generator/dist/cli.js generate --config examples/react/fieldwork.config.ts --check
   php:
     runs-on: ubuntu-latest
