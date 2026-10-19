@@ -27,7 +27,7 @@
         "@fieldwork/core": "workspace:*",
         "effect": "4.0.2",
         "jiti": "^2.6.1",
-        "oxfmt": "^0.64.0",
+        "oxfmt": "^0.67.0",
         "typescript-api": "npm:typescript@^5.9.3"
     }
 }

@@ -6,6 +6,7 @@ catalog:
   vite-plus: 0.3.0
 overrides:
   vite@*: 'catalog:'
+  tinypool@<2.1.2: ^2.1.2
 peerDependencyRules:
   allowedVersions:
     vite: '*'
