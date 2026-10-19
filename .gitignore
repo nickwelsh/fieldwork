@@ -8,3 +8,9 @@ vendor/
 
 .pnpm-store/
 .DS_Store
+.docs-base/
+.cloudflare/
+apps/docs/generated/
+.env
+.env.*
+.dev.vars*

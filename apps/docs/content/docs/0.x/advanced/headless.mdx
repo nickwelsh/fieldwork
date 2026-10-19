@@ -1,0 +1,63 @@
+---
+title: Headless sessions and Effect
+description: Use typed operations, schema transformations, services, and scoped execution without React.
+---
+
+Application operations preserve their success, domain error, and service types. Pass native Effect schemas directly: draft values and decoded output can have different types. Decoding and submission share one interruptible Effect, including asynchronous schema checks. The session supplies its execution scope; supply a runner when the schema decoder or operation requires additional services.
+
+```ts
+import { createFormSession, defineForm } from '@fieldwork/core';
+import { Context, Effect, Schema } from 'effect';
+
+type SaveError = { readonly _tag: 'SaveFailed'; readonly message: string };
+class ProfileApi extends Context.Service<
+    ProfileApi,
+    {
+        readonly save: (values: { age: number }) => Effect.Effect<{ id: number }, SaveError>;
+    }
+>()('ProfileApi') {}
+
+const definition = defineForm<{ age: string }, { age: number }>()({
+    id: 'Profile',
+    defaultValues: { age: '' },
+    fields: {
+        age: {
+            name: 'age',
+            type: 'string',
+            component: 'TextField',
+            label: 'Age',
+            props: {},
+            constraints: {},
+            nullable: false,
+            serverRules: [],
+        },
+    },
+    groups: {},
+    schema: Schema.Struct({ age: Schema.NumberFromString.check(Schema.isFinite()) }),
+});
+
+const services = Context.make(ProfileApi, {
+    save: (values) => Effect.succeed({ id: values.age }),
+});
+const session = createFormSession({
+    definition,
+    operation: (output) =>
+        Effect.gen(function* () {
+            const api = yield* ProfileApi;
+            return yield* api.save(output); // output.age is a number.
+        }),
+    run: Effect.runPromiseWith(services),
+});
+
+session.setValue('age', '42'); // Draft age remains a string.
+const result = await Effect.runPromise(session.submitEffect());
+if (result.status === 'success') console.log(result.value?.id);
+if (result.status === 'failure') console.log(result.error.message);
+session.dispose();
+```
+
+Schema decoder services are inferred from the definition and retained through `bindForm` and React bindings. The runner must provide the services required by both decoding and the operation; TypeScript rejects a missing or insufficient runner.
+
+`submitEffect()` describes a lazy wait for the session's submission and composes with application Effects. `submit()` starts the same work immediately and returns a Promise for event handlers. Concurrent callers of either API share one validation and submission. The session owns the execution fiber and scope, and an optional configured runner supplies application services. Interrupting a waiting fiber leaves the shared execution active. Use `session.cancel()`, `reset()`, or `dispose()` to interrupt the execution for every caller. Effect finalizers release resources on completion and cancellation.
+
+React `useForm` accepts the same `operation` and `run` options. React subscriptions consume stable snapshots from the session's native Effect atom; headless consumers use `getSnapshot()` and `subscribe()`. Each subscription has a scoped lifetime and disposal removes every listener. Submit captures the current draft, coalesces duplicate submissions, and commits the submitted baseline only on success. Edits made during submission stay dirty; stale server errors cannot overwrite fields changed after submission. Cancellation interrupts decoding and submission and suppresses late progress and results. Typed domain errors produce `failure`; unexpected defects produce `defect`.

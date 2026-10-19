@@ -18,13 +18,15 @@ This repository uses **Vite+** for development, packaging, formatting, type-awar
 
 Packages are local and have not been published to npm or Packagist. The runtime uses **Effect 4.0.2**.
 
+The [documentation site](https://docs.nickwelsh.me/fieldwork) includes usage guides and a Refquill-generated TypeScript/PHP API reference. Run `pnpm docs:dev` locally or see [apps/docs](apps/docs/README.md) for release deployment setup.
+
 The [performance benchmark](benchmarks/README.md) includes a mounted React form with up to 5,000 inputs and a headless editing/subscription harness, with recorded measurements and reproduction instructions.
 
 Existing integrations must replace their form hook factory with direct `createFieldwork` registries, import context hooks from `@fieldwork/react`, and update field components to `value`, `setValue`, `touch`, and `errors`. Remove the previous form-library dependencies and application hook/context modules. Custom source drivers, operation providers, and submission drivers return Effects; wrap synchronous work with `Effect.sync`, and use `Effect.callback` or `Effect.tryPromise` at asynchronous platform boundaries.
 
 ## Run the monorepo
 
-Requires Node 24.11+, pnpm (the pinned version is in `package.json`), Vite+ (`vp`), PHP 8.3+, and Composer.
+Requires Node 24.11+, pnpm (the pinned version is in `package.json`), Vite+ (`vp`), PHP 8.4.1+ for the locked development dependencies, and Composer. The PHP package supports PHP 8.3+; CI uses PHP 8.4.
 
 ```sh
 vp install

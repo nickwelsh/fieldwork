@@ -1,0 +1,69 @@
+---
+title: Installation
+description: Install the local packages and choose the parts your application needs.
+---
+
+Fieldwork's packages are currently developed and consumed from this repository. They have not yet been published to npm or Packagist. Use workspace dependencies, local package archives, or a Composer path repository instead of assuming registry installation is available.
+
+## Requirements
+
+- Node.js 24.11 or newer and the pnpm version pinned in the root `package.json`.
+- React 19 and Effect `4.0.2` for React forms.
+- PHP 8.3 or newer, Composer, and Laravel 12 or 13 for the Laravel integration.
+- PHP 8.4.1 or newer for this checkout's locked development dependencies; CI uses PHP 8.4.
+- Vite+ for repository development and package builds.
+
+## Choose packages
+
+| Package                | Install for                                                            |
+| ---------------------- | ---------------------------------------------------------------------- |
+| `@fieldwork/core`      | Definitions, JSON contracts, validation, and headless sessions         |
+| `@fieldwork/react`     | React registries, contexts, bound fields, layouts, and groups          |
+| `@fieldwork/inertia`   | Inertia runtime submission and generator bindings                      |
+| `@fieldwork/generator` | The `fieldwork` CLI, inspection, and generation                        |
+| `@fieldwork/laravel`   | Node integration with the Laravel extractor and HTTP provider          |
+| `fieldwork/laravel`    | PHP metadata builders, extraction, configuration, and Artisan commands |
+
+The generator and Laravel JavaScript package normally belong in development dependencies. The core, React, and selected submission adapter belong in runtime dependencies. Install the adapter's `@inertiajs/core` peer in the consuming application.
+
+## Build the repository
+
+```sh
+git clone https://github.com/nickwelsh/fieldwork.git
+cd fieldwork
+vp install --frozen-lockfile
+composer install --working-dir=packages/laravel
+vp run build
+```
+
+Within this workspace, use `workspace:*` for Fieldwork package dependencies. For an application outside the workspace, pack each required package after building and install those archives together, replacing any `workspace:` references through pnpm's packing process.
+
+## Add the PHP package
+
+In a Laravel application's `composer.json`, register the local checkout as a path repository:
+
+```json
+{
+    "repositories": [{ "type": "path", "url": "../fieldwork/packages/laravel" }]
+}
+```
+
+Then install and publish its configuration:
+
+```sh
+composer require fieldwork/laravel:@dev
+php artisan vendor:publish --tag=fieldwork-config
+```
+
+Laravel discovers `FieldworkServiceProvider` automatically. Adjust the relative repository path for your directory structure. Commit your application's `config/fieldwork.php` and review its component mappings before generation.
+
+## Try the bundled example
+
+```sh
+vp run generate:example
+vp run dev
+```
+
+The example extracts a real FormRequest without booting a full Laravel application. Its submission handler displays the payload locally and its address lookup uses a sample suggestion. Connect an application backend and address provider for production.
+
+Continue with the [quickstart](./quickstart.mdx).

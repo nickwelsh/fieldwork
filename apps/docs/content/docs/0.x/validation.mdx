@@ -1,0 +1,43 @@
+---
+title: Validation
+description: Understand submit-time decoding, supported client constraints, and server authority.
+---
+
+## When validation runs
+
+Validation runs on submit. Changing a value updates the draft; touching a field records interaction. Neither starts validation. A session captures the draft, decodes it with `Schema.decodeUnknownEffect`, and submits only when decoding succeeds. Schema issues become field or root errors. The React form uses `noValidate` so Fieldwork owns this submission lifecycle.
+
+Generated constraint schemas are compiled once per definition object and reused. Treat definitions as readonly and create a new definition object when changing rules. Native Effect schemas can decode a draft type into a different output type and can require application services. See [headless sessions](./advanced/headless.mdx) for a complete transformation example.
+
+## Supported client constraints
+
+| Constraint                          | Behavior                                         |
+| ----------------------------------- | ------------------------------------------------ |
+| `required`                          | Reject missing or empty values                   |
+| `required_if`, `required_unless`    | Compute requiredness from a referenced value     |
+| `required_with`, `required_without` | Compute requiredness from other fields' presence |
+| `minLength`, `maxLength`            | Bound string length                              |
+| `min`, `max`                        | Bound numeric values                             |
+| `minItems`, `maxItems`              | Bound array length                               |
+| `options`                           | Restrict selected enum values                    |
+| `format`                            | Carry email, URL, or date format metadata        |
+
+Client checks improve feedback; Laravel remains authoritative for validation and authorization. Email/URL checks are approximate. Date rules, file size/content rules, unique/existence queries, closures, custom rules, and unsupported conditions remain server validation and produce diagnostics.
+
+## Draft defaults
+
+Draft defaults are empty strings (including enum drafts), zero for numbers, false for booleans, empty arrays/objects, and null for nullable/file fields. Enum draft types include the blank string until selection; option validation rejects it when required.
+
+Required object fields reject empty plain records, matching Laravel's empty associative-array behavior. Conditional presence rules also treat an empty record as absent.
+
+## Nested and wildcard rules
+
+Wildcard rule validation checks every array position, including sparse holes; required child fields reject missing rows. Conditional references such as `contacts.*.enabled` resolve against the concrete row being validated, including nested wildcard keys. Conditional requirements follow Laravel's missing-dependency and boolean-comparison behavior. Rendering repeated fields belongs to an application-owned parent array component using the typed `form.Field`, `form.Subscribe`, and `setFieldValue` APIs; this version does not generate repeaters or bound wildcard child components.
+
+Native schema keys containing dots, brackets, or other segments that field paths cannot represent produce root errors. Their messages remain visible without converting an invalid draft into an execution defect.
+
+## Server validation and extraction limits
+
+Render field errors through `useFieldContext` and root errors from `state.errors['']`. Laravel errors returned by a submission driver become session errors. Errors from an older submitted draft do not overwrite fields changed after submission.
+
+Generation requires rules that can be described without authenticated/live request values. FormRequests are instantiated without running validation or authorization; request-dependent rules may need a dedicated source driver. Registry inspection supports callable components and statically inspectable `withFieldGroup` declarations; complex wrappers may need a framework driver that supplies a manifest.

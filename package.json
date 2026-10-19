@@ -9,6 +9,10 @@
         "test:php": "composer --working-dir=packages/laravel test",
         "format": "vp fmt",
         "dev": "vp -C examples/react dev",
+        "docs:dev": "pnpm --filter @fieldwork/docs dev",
+        "docs:build": "pnpm --filter @fieldwork/docs build",
+        "docs:check": "pnpm --filter @fieldwork/docs check",
+        "docs:api": "pnpm --filter @fieldwork/docs generate:api",
         "generate:example": "vp exec tsx packages/generator/src/cli.ts generate --config examples/react/fieldwork.config.ts",
         "benchmark:session": "node --import tsx benchmarks/form-session.ts"
     },

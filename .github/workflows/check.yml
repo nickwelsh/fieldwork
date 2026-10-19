@@ -3,16 +3,19 @@ on:
   push:
     branches:
       - main
+    tags: ['v*']
   pull_request:
 permissions:
   contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 jobs:
   typescript:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      CF_SEND_TELEMETRY: 'false'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,6 +34,19 @@ jobs:
       - run: pnpm exec tsc --noEmit
       - run: pnpm exec vp test run
       - run: node packages/generator/dist/cli.js generate --config examples/react/fieldwork.config.ts --check
+      - run: pnpm docs:check
+      - name: Verify documentation in the Workers runtime
+        run: pnpm --filter @fieldwork/docs test
+      - name: Validate the documentation deployment
+        run: pnpm --filter @fieldwork/docs deploy:check
+      - name: Save verified release documentation
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: fieldwork-docs
+          path: apps/docs/.cloudflare/output
+          include-hidden-files: true
+          if-no-files-found: error
   php:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -45,3 +61,32 @@ jobs:
       - run: composer --working-dir=packages/laravel test
       - run: composer --working-dir=packages/laravel check
       - run: php packages/laravel/vendor/bin/pint --test packages/laravel/src packages/laravel/tests examples/react/php
+
+  deploy-docs:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [typescript, php]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: fieldwork-docs-production
+      cancel-in-progress: false
+    environment:
+      name: cloudflare
+      url: https://docs.nickwelsh.me/fieldwork
+    env:
+      CF_SEND_TELEMETRY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: fieldwork-docs
+          path: apps/docs/.cloudflare/output
+      - name: Deploy the verified release documentation
+        run: pnpm --filter @fieldwork/docs deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

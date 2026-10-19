@@ -1,0 +1,12 @@
+diff --git a/dist/router/define-router-utils/request-handler.js b/dist/router/define-router-utils/request-handler.js
+--- a/dist/router/define-router-utils/request-handler.js
++++ b/dist/router/define-router-utils/request-handler.js
+@@ -212,7 +212,7 @@
+                 if (typeof resolved === 'function') {
+                     const url = new URL(req.url);
+                     url.pathname = pathname;
+-                    const apiReq = new Request(url, req);
++                    const apiReq = new Request(url, new Request(req));
+                     return resolved(apiReq);
+                 }
+                 const renderPage = async (pathname, query, status = 200, resolvedRoute)=>{

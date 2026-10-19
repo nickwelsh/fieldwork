@@ -1,0 +1,26 @@
+diff --git a/dist/app.js b/dist/app.js
+index 7d3541273ffffcec96ec790eec51219c7824dffc..e5f150a573d20548bdc2b53578db817e8c475d42 100644
+--- a/dist/app.js
++++ b/dist/app.js
+@@ -50,7 +50,7 @@ export function createDocsApp(config, authored, inputs) {
+             unstable_notFound();
+         const data = page.data;
+         const neighbours = findNeighbour(source.getPageTree(), page.url);
+-        const githubUrl = data.kind === 'mdx' ? githubFileUrl(config, `${config.content}/${page.path}`) : undefined;
++        const githubUrl = data.kind === 'mdx' ? githubFileUrl(config, `${config.githubContentPath ?? config.content}/${page.path}`) : undefined;
+         return (_jsxs(_Fragment, { children: [_jsx("title", { children: `${data.title} | ${config.name}` }), _jsx("meta", { name: "description", content: data.description }), _jsx("link", { rel: "canonical", href: absoluteUrl(page.url) }), _jsx(DocsPage, { title: data.title, description: data.description, toc: data.toc, markdownUrl: `/llms.mdx${page.url}/content.md`, ...(githubUrl ? { githubUrl } : {}), previous: neighbours.previous, next: neighbours.next, ...(data.kind === 'reference'
+                         ? {
+                             layout: 'reference',
+diff --git a/dist/application-config.d.ts b/dist/application-config.d.ts
+index df26fa8e1c30b785d90f163a1526cc1282c23176..c52b25393bb650b60218b79110af9d6cd9a11e51 100644
+--- a/dist/application-config.d.ts
++++ b/dist/application-config.d.ts
+@@ -11,6 +11,8 @@ export interface RefquillConfig {
+ export interface DocsConfig extends Pick<DocsSite, 'name' | 'origin' | 'githubUrl' | 'githubBranch' | 'basePath' | 'docsRoute'> {
+     /** Path to authored MDX, relative to the site directory. */
+     content?: string;
++    /** Repository-relative path for authored page source links in monorepos. */
++    githubContentPath?: string;
+     refquill?: RefquillConfig[];
+ }
+ export declare function routePath(value: string, label: string, allowRoot?: boolean): string;

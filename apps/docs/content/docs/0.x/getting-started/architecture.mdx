@@ -1,0 +1,43 @@
+---
+title: Architecture
+description: Follow a form from portable metadata to a single Effect session.
+---
+
+## Definitions describe editable values
+
+A `FormDefinition` names fields, defaults, constraints, presentation metadata, and groups. It can include a native Effect schema for validation and transformations. The core contract does not require React, Laravel, or a generator.
+
+Laravel's extractor produces a versioned `Extraction` containing portable metadata and diagnostics. The generator checks the metadata against the application's component registry, then emits TypeScript definitions. Custom source drivers can supply the same contract.
+
+## Descriptors add submission intent
+
+A version-1 `FormDescriptor` pairs a definition with optional record defaults and either a named driver binding or a callback. Generated actions return descriptors from `.form(parameters)`. An external integration can return the same shape without knowing the application's component registry.
+
+The descriptor identifies what to submit. The application chooses how to execute it by registering a runtime driver, supplying a callback, or setting an Effect operation. [Portable descriptors](../advanced/descriptors.mdx) explain the JSON boundary and default precedence.
+
+## Sessions own editing and execution
+
+`createFormSession` owns the editable draft, baseline, touched state, errors, progress, and execution state. React's `Form` or `useForm` creates one session per mounted form and exposes selected snapshots through contexts and subscriptions.
+
+Submission captures the draft, decodes it, then executes a callback, driver, or operation in an interruptible Effect. Duplicate submissions share the active work. Success commits the submitted baseline; edits made during submission remain dirty. Cancellation suppresses late outcomes and progress.
+
+Keep one editable-value store. A producer or transport should not maintain another form draft synchronized with Fieldwork.
+
+## Packages have separate responsibilities
+
+| Layer                  | Responsibility                                                              |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `@fieldwork/core`      | Portable metadata, parsers, validation, route binding, and sessions         |
+| `@fieldwork/react`     | Component contexts, subscriptions, typed layouts, and groups                |
+| `@fieldwork/generator` | Inspection, source orchestration, emission, and output synchronization      |
+| `@fieldwork/laravel`   | Node subprocess integration, enum preparation, and HTTP operation discovery |
+| `fieldwork/laravel`    | PHP metadata builders and FormRequest extraction                            |
+| `@fieldwork/inertia`   | Runtime visits and generated HTTP bindings                                  |
+
+The portable runtime depends on Effect. Node filesystem and process services live at the generation boundary. Submission drivers do not need Laravel; source extraction does not need Inertia.
+
+## Trust boundaries
+
+Validate external JSON with the core parsers before rendering it. Backend validation and authorization remain authoritative. A successful client decode cannot prove that a record is accessible, that a value is unique, or that a mutation was accepted by the server.
+
+Return success only after authoritative acceptance. Aborting a local wait cannot undo an already accepted or durably queued mutation.

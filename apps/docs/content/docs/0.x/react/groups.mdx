@@ -1,0 +1,65 @@
+---
+title: Composite field groups
+description: Map several backend fields into one typed application component.
+---
+
+Use Fieldwork's `withFieldGroup` to let one component own several backend fields:
+
+```tsx
+import { withFieldGroup } from '@fieldwork/react';
+
+const addressDefaults: {
+    line1: string;
+    line2: string | null;
+    city: string;
+    state: string;
+    postalCode: string;
+} = { line1: '', line2: null, city: '', state: '', postalCode: '' };
+
+export const AddressAutocomplete = withFieldGroup({
+    defaultValues: addressDefaults,
+    props: { label: 'Address' },
+    render: function AddressAutocomplete({ group, label }) {
+        // In your provider's selection callback:
+        // group.setFieldValue('line1', place.line1);
+        // group.setFieldValue('line2', place.line2);
+        // group.setFieldValue('city', place.city);
+        // group.setFieldValue('state', place.state);
+        // group.setFieldValue('postalCode', place.postalCode);
+        // Render group.Field subscriptions for each slot's errors.
+        // group.touchField('line1') records interaction.
+        return (
+            <fieldset>
+                <legend>{label}</legend>
+                {/* Provider widget */}
+            </fieldset>
+        );
+    },
+});
+
+export const fieldGroups = { AddressAutocomplete };
+```
+
+```php
+use App\Enums\FormGroup;
+use Fieldwork\Laravel\FieldGroup;
+
+public function groups(): array
+{
+    return [
+        'address' => FieldGroup::make(FormGroup::AddressAutocomplete)
+            ->label('Delivery Address')
+            ->fields([
+                'line1' => 'address_line_1',
+                'line2' => 'address_line_2',
+                'city' => 'city',
+                'state' => 'state',
+                'postalCode' => 'zip',
+            ]),
+    ];
+}
+```
+
+Every slot must be mapped to a known field with a compatible type for both reading and writing. This includes scalar and enum values, nullability, explicit undefined, and array mutability. Fields can belong to only one group. The runnable example demonstrates all five writes, group error subscriptions, and a readout of the resulting values.
+
+Container slots are checked against the complete generated value shape, including array elements, nested object fields, optional properties, and index signatures. Recursive or otherwise uninspectable slot types are rejected during generation.

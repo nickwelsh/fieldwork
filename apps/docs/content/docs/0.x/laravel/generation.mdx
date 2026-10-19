@@ -1,0 +1,70 @@
+---
+title: Generate forms and actions
+description: Configure source drivers, component inspection, named actions, and drift checking.
+---
+
+```ts
+// fieldwork.config.ts
+import { defineConfig } from '@fieldwork/generator';
+import { laravel } from '@fieldwork/laravel/generator';
+import { react } from '@fieldwork/react/generator';
+import { inertia } from '@fieldwork/inertia/generator';
+
+const app = laravel();
+
+export default defineConfig({
+    sources: { app },
+    framework: react('./resources/js/forms/index.ts'),
+    submissions: { web: inertia({ bindings: app.http() }) },
+    output: {
+        forms: './resources/js/generated/forms',
+        actions: './resources/js/generated/actions',
+    },
+});
+```
+
+Paths resolve relative to the config file. React inspects the default-exported `createFieldwork` setup and its direct component registries and field groups without executing UI modules. Setup options and group declarations must be statically inspectable.
+
+Request discovery and enum targets belong in `config/fieldwork.php`:
+
+```php
+return [
+    'requests' => ['app/Http/Requests'],
+    'enums' => [
+        'fields' => App\Enums\FormField::class,
+        'components' => App\Enums\FormComponent::class,
+        'groups' => App\Enums\FormGroup::class,
+    ],
+    'profiles' => [
+        'fixtures' => ['requests' => ['tests/Fixtures']],
+    ],
+    'fields' => [/* existing type and rule mappings */],
+];
+```
+
+Enum targets are a declarative array of class names or `null` to disable a registry. Paths follow the application's Composer PSR-4 mappings. The Laravel integration reads only this array and its PHP imports before booting Laravel, writes the enums, then extracts schemas. Config and requests can therefore reference generated enum cases on the first run. This uses no config closures and remains compatible with Laravel config caching. Clear cached config after changing backend discovery or mappings. `laravel({ root, profile: 'fixtures' })` selects a backend discovery profile; directories are defined only in PHP.
+
+```sh
+fieldwork fields                 # enums only; useful for initial setup
+fieldwork generate               # enums, forms, and named route actions
+fieldwork generate --check       # CI drift check
+```
+
+Routes whose controller/closure parameters reference a FormRequest generate named action modules. For `profile.update` with `/users/{user}`, use:
+
+```tsx
+import { update } from './generated/actions/profile';
+
+<Form form={update.form({ user: user.id })} defaultValues={values} />;
+```
+
+Every generated operation exposes a version-1 `FormDescriptor` through `action.form(parameters)`; call `action.form()` when there are no parameters. Optional Laravel parameters are optional properties. The result pairs the unchanged schema with a named executor and its binding. For an explicit HTTP binding:
+
+```ts
+bindForm(definition, {
+    driver: 'web',
+    binding: { kind: 'http', url: '/users/42', method: 'patch' },
+});
+```
+
+Schemas can render directly for local state/validation. Submission requires a bound operation and a registered executor, or a per-form `submission` executor override.

@@ -1,0 +1,80 @@
+---
+title: Field and form components
+description: Build accessible application-owned controls and register their literal component names.
+---
+
+Fieldwork owns the form session and React contexts. Field components receive presentation metadata and subscribe to their own value, errors, and metadata:
+
+```tsx
+import { useFieldContext, type FieldProps } from '@fieldwork/react';
+import { useId } from 'react';
+
+export function TextField({ label, helpText, constraints }: FieldProps<string>) {
+    const field = useFieldContext<string>();
+    const id = useId();
+    return (
+        <div>
+            <label htmlFor={id}>{label}</label>
+            <input
+                id={id}
+                name={field.name}
+                value={field.value}
+                onChange={(event) => field.setValue(event.target.value)}
+                onBlur={field.touch}
+                required={constraints.required}
+                minLength={constraints.minLength}
+                maxLength={constraints.maxLength}
+                aria-invalid={field.errors.length > 0}
+            />
+            {helpText && <p>{helpText}</p>}
+            {field.errors.map((error, index) => (
+                <p key={index} role="alert">
+                    {error}
+                </p>
+            ))}
+        </div>
+    );
+}
+```
+
+`setValue` accepts a value or an updater. `touch()` records interaction; `meta` exposes `isTouched`, `isDirty`, and `isValid`. Errors are normalized strings.
+
+```tsx
+import { useFormContext } from '@fieldwork/react';
+
+export function SubmitButton({ label = 'Save' }: { label?: string }) {
+    const form = useFormContext();
+    return (
+        <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+                <button type="submit" disabled={isSubmitting}>
+                    {label}
+                </button>
+            )}
+        </form.Subscribe>
+    );
+}
+```
+
+Register the components directly, retaining their literal keys:
+
+```ts
+import { createFieldwork } from '@fieldwork/react';
+import { inertia } from '@fieldwork/inertia';
+import { TextField, CheckboxField } from './field-components';
+import { SubmitButton, FormErrors } from './form-components';
+import { fieldGroups } from './address-group';
+
+const fieldwork = createFieldwork({
+    fieldComponents: { TextField, CheckboxField },
+    formComponents: { SubmitButton, FormErrors },
+    fieldGroups,
+    submissions: { web: inertia({ visit: { preserveScroll: true, errorBag: 'profile' } }) },
+    submitComponent: 'SubmitButton',
+});
+
+export default fieldwork;
+export const { Form, useForm } = fieldwork;
+```
+
+Avoid annotating registries as broad `Record<string, ...>` types: literal keys power generated enums and typed bound components. Context hooks are exported by `@fieldwork/react`, so application context and hook-factory modules are unnecessary.

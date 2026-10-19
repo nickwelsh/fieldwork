@@ -1,4 +1,5 @@
 packages:
+  - 'apps/*'
   - 'packages/*'
   - 'examples/react'
 catalog:
@@ -12,7 +13,18 @@ peerDependencyRules:
     vite: '*'
 allowBuilds:
   esbuild: true
+  workerd: true
 minimumReleaseAgeExclude:
+  - '@nickwelsh/docs-base@1.0.0'
+  - '@nickwelsh/refquill@0.1.0'
+  - '@nickwelsh/refquill-fumadocs@0.1.0'
+  - '@nickwelsh/refquill-schema@0.1.0'
+  - '@fumadocs/base-ui@16.17.5'
+  - fumadocs-core@16.17.5
   - effect@4.0.2
   - '@effect/platform-node-shared@4.0.2'
   - '@effect/platform-node@4.0.2'
+patchedDependencies:
+  '@nickwelsh/docs-base@1.0.0': patches/@nickwelsh__docs-base@1.0.0.patch
+  '@nickwelsh/refquill@0.1.0': patches/@nickwelsh__refquill@0.1.0.patch
+  waku@1.0.0-rc.3: patches/waku@1.0.0-rc.3.patch

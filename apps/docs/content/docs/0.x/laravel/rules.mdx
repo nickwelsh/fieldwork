@@ -1,0 +1,67 @@
+---
+title: FormRequests and field mappings
+description: Extract Laravel rules and customize labels, components, help text, and props.
+---
+
+Install the local Composer package into a Laravel app using a Composer path repository. Laravel discovers its service provider automatically. Publish configuration with:
+
+```sh
+php artisan vendor:publish --tag=fieldwork-config
+```
+
+Map rule-inferred value types to your generated enum:
+
+```php
+use App\Enums\FormField;
+
+return [
+    'requests' => ['app/Http/Requests'],
+    'fields' => [
+        'types' => [
+            'string' => FormField::TextField,
+            'integer' => FormField::NumberField,
+            'number' => FormField::NumberField,
+            'boolean' => FormField::CheckboxField,
+            'date' => FormField::DateField,
+            'enum' => FormField::SelectField,
+            'file' => FormField::FileField,
+        ],
+        'rules' => [
+            'email' => ['component' => FormField::TextField, 'props' => ['type' => 'email']],
+            'url' => ['component' => FormField::TextField, 'props' => ['type' => 'url']],
+        ],
+        'fallbackType' => 'string',
+    ],
+];
+```
+
+Type mapping establishes the default component and props; the first matching rule mapping in configuration takes priority; `fields()` can override them. Register only components that exist in your application. Arrays and objects require explicit components/configuration.
+
+A basic FormRequest needs only `rules()`:
+
+```php
+public function rules(): array
+{
+    return [
+        'first_name' => ['required', 'string', 'max:255'],
+        'email' => 'required|email',
+        'newsletter' => ['required', 'boolean'],
+    ];
+}
+```
+
+The default label is the title-case version of the final named field segment: `first_name` becomes `First Name`, and `billing.city` becomes `City`.
+
+```php
+use Fieldwork\Laravel\Field;
+
+public function fields(): array
+{
+    return [
+        'email' => Field::make()->helpText('We use this for profile updates.'),
+        'first_name' => Field::make(FormField::TextField)->label('Given Name')->props(['placeholder' => 'Alex']),
+    ];
+}
+```
+
+Props must be JSON values. Generation checks supplied props against the application's component types and rejects unknown components, unknown props, invalid values, and missing required props.

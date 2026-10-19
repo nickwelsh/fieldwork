@@ -1,0 +1,68 @@
+---
+title: Portable form descriptors
+description: Produce versioned forms for Fieldwork from any integration.
+---
+
+Any package can produce forms for Fieldwork. Generation is optional: the React runtime depends on `@fieldwork/core`'s public contract, not on the Laravel package or generator. Zero for Laravel and other integrations can implement this contract in their own packages with type-only imports.
+
+A `FormDescriptor` is a versioned object pairing a reusable `FormDefinition` with a submission strategy and optional record-specific defaults:
+
+```ts
+import type { FormDefinition, FormDescriptor, SubmissionCallback } from '@fieldwork/core';
+
+type TodoValues = { title: string; done: boolean };
+
+// Produced by your integration; fields retain literal component names and keys.
+declare const definition: FormDefinition<TodoValues>;
+
+const httpForm = {
+    version: 1,
+    definition,
+    defaultValues: { title: 'Buy milk', done: false },
+    submission: {
+        driver: 'http',
+        binding: { kind: 'http', url: '/todos/42', method: 'patch' },
+    },
+} satisfies FormDescriptor<TodoValues>;
+```
+
+Register a matching runtime executor, for example `submissions: { http: inertia() }`, in `createFieldwork`. The producer supplies the target; the application chooses how that target executes. Existing Laravel generation now emits this descriptor from each generated action's `.form(parameters)` helper. Generator submission keys still select runtime driver names.
+
+For an integration that owns execution, supply a callback instead of a driver:
+
+```ts
+const submit: SubmissionCallback<TodoValues> = async (values, { signal }) => {
+    // prepareAndSubmit represents your integration's own mutation execution.
+    const result = await prepareAndSubmit(values, signal);
+    if (result.errors) return { status: 'invalid', errors: result.errors };
+    return { status: 'success' };
+};
+
+const callbackForm = {
+    version: 1,
+    definition,
+    defaultValues: { title: 'Buy milk', done: false },
+    submission: { submit },
+} satisfies FormDescriptor<TodoValues>;
+```
+
+`submission` accepts exactly one strategy. Callbacks receive validated output and `{ signal, onProgress }`, and return a `SubmissionResult` directly or through a Promise. Results are `success`, `invalid` (field/root errors), `failure` (an expected error), `cancelled`, or `defect`. Use `SubmissionCallback<Output, Success, Error>` for typed result payloads. Thrown exceptions and rejected Promises settle as defects; expected failures must be returned explicitly. Report success only after authoritative acceptance, not merely an optimistic local write.
+
+A hook in another package can return `{ form: callbackForm }` without importing the application registry or creating a session:
+
+```tsx
+const { form } = useMutation(todo.update()); // Supplied by the external integration.
+return <Form form={form} />;
+
+// For programmatic field access:
+const instance = useForm(form);
+return <Form form={instance} />;
+```
+
+`Form` creates the Fieldwork session. Its components read values, errors, and submission state from that one session. A producer must not synchronize a separate editable-value store with Fieldwork. Definition defaults are the fallback; descriptor defaults override them, and an explicit `defaultValues` option overrides descriptor defaults. Defaults initialize a mount rather than resetting edits on rerender. Use a key or explicit reset to switch records. Callbacks update on committed renders, while an in-flight submission keeps its captured handler and values.
+
+Cancellation aborts the callback's signal and suppresses late outcomes and progress. The integration owns any underlying cancellation or cleanup; an already-enqueued durable mutation may still execute. Explicit `submission` or `operation` options replace the descriptor's strategy for that form instance.
+
+For JSON producers, export `FormDescriptorData`, which excludes runtime schemas and callbacks. Its version-1 format is checked by `FormDescriptorSchema`, `parseFormDescriptor(json)`, or `parseFormDescriptorEffect(json)`. All fields, props, constraints, defaults, and driver bindings in this data format are JSON values. Fieldwork compiles field constraints into validation at runtime; native Effect schemas remain an optional runtime extension on `FormDefinition` for decoding and transformations. Validate untrusted JSON at the producer boundary before rendering. TypeScript producers should preserve literal field/component keys using `satisfies` or `defineForm<Values>()`, and declare editable default-value types explicitly so a blank initial value does not narrow the entire draft to a string literal.
+
+Bare definitions, existing `bindForm` calls, and initialized form instances remain supported. `bindForm` now includes `version: 1`; `BoundForm` remains available for existing driver-only integrations. No Fieldwork-owned Zero adapter is required or included.

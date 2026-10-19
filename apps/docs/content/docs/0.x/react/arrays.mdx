@@ -1,0 +1,61 @@
+---
+title: Nested values and arrays
+description: Read and edit nested fields, repeaters, dynamic arrays, and fixed tuples.
+---
+
+Fieldwork uses typed paths into your declared values. Named fields expose bound layout components; dynamic repeated inputs use the form API.
+
+## Named nested fields
+
+For a generated `billing.city` field, render `<fields.billing.city />`. Numeric array bindings use bracket access. Assign a binding to a capitalized variable before using JSX:
+
+```tsx
+const RowName = fields.rows[0].name;
+return <RowName />;
+```
+
+A container field can have its own component while exposing child bindings. Metadata changes preserve unchanged child identities. Adding or removing a child rebuilds its container binding; input edits do not rebuild the component tree.
+
+## Dynamic repeated inputs
+
+Build a parent array component for repeaters. Subscribe to the array shape, render `form.Field` for each concrete item path, and update values through the session. The following pattern assumes a form whose values contain `contacts: Array<{ email: string }>`:
+
+```tsx
+<form.Subscribe selector={(state) => state.values.contacts}>
+    {(contacts) => (
+        <>
+            {contacts.map((_contact, index) => (
+                <form.Field key={index} name={`contacts.${index}.email`}>
+                    {(field) => (
+                        <label>
+                            Email {index + 1}
+                            <input
+                                value={field.value ?? ''}
+                                onChange={(event) => field.setValue(event.target.value)}
+                                onBlur={field.touch}
+                                aria-invalid={field.errors.length > 0}
+                            />
+                            <span role="alert">{field.errors.join(' ')}</span>
+                        </label>
+                    )}
+                </form.Field>
+            ))}
+            <button type="button" onClick={() => form.append('contacts', { email: '' })}>
+                Add contact
+            </button>
+        </>
+    )}
+</form.Subscribe>
+```
+
+This small example uses positional keys. For reorderable lists with row-local widget state, give each row a stable application identity and use it as the React key.
+
+`append`, `remove`, and `move` operate on dynamic arrays. Tuples, including variadic tuples, retain fixed slots and require slot edits or a whole-value replacement. The generated layout does not automatically create repeaters or wildcard child components.
+
+## Path and missing-value behavior
+
+Dot and bracket indexes normalize to the same array position, including padded numeric indexes. Object keys such as `"01"` remain literal keys. `session.resolvePath()` returns the canonical path used for metadata and errors.
+
+Reads through optional or nullable containers include `undefined`. Dynamic array and record reads may also be missing. Writes use the declared leaf type. When a missing parent must be created, the schema, generated metadata, or baseline shape determines whether it is an array or object. Initialize an array with `append` or a whole-field value if no inspectable shape exists.
+
+See [validation](../validation.mdx) for wildcard constraints and row-relative conditional rules.

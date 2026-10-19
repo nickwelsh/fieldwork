@@ -1,0 +1,50 @@
+---
+title: Forms and layouts
+description: Render automatic or custom layouts and manage the lifetime of each form.
+---
+
+```tsx
+<Form form={update.form({ user: user.id })} defaultValues={values}>
+    {({ fields, components, groups }) => (
+        <>
+            <fields.first_name />
+            <fields.email label="Contact Email" />
+            <groups.address label="Delivery Address" />
+            <components.FormErrors />
+            <components.SubmitButton label="Save" />
+        </>
+    )}
+</Form>
+```
+
+Unknown fields and invalid component props are TypeScript errors. Nested named fields use nested access, such as `<fields.billing.city />`. Bracket paths such as `rows[0].name` expose `fields.rows[0].name`; assign that binding to a capitalized variable, such as `const RowName = fields.rows[0].name`, then render `<RowName />`. A container field can render through `<fields.billing />` while also exposing its child bindings.
+
+Custom children render exactly the supplied layout. Without children, Fieldwork renders ungrouped fields and each group once in field order, followed by the configured submit component.
+
+Each mounted `Form` owns an independent Effect form session. Bound component identity stays stable across metadata and field-order changes, preserving focus and drafts. Adding or removing a container's child bindings creates a new immutable container binding; unchanged child bindings retain their identity. `defaultValues` initializes the mount; use a React `key` when switching records, or call `form.reset()` deliberately.
+
+For direct form access:
+
+```tsx
+const profile = useForm(update.form({ user: user.id }), { defaultValues: values });
+// profile.form exposes typed Field, Subscribe, value updates, reset, submit, and cancellation.
+return <Form form={profile} />;
+```
+
+Field reads below optional or nullable containers include `undefined`; dynamic array indexes and record keys can also be missing. Writes retain the declared leaf type. Array paths accept dot and bracket indexes, including equivalent padded indexes, while object keys such as `"01"` remain literal. Missing containers use the encoded Effect schema, generated metadata, or baseline shape to determine whether to create an array or object. Without an inspectable shape, initialize an array explicitly with `append` or a whole-field value. `form.session.resolvePath()` exposes the canonical path used for field metadata and errors.
+
+Numeric object keys support dot and bracket paths and retain their declared value types. Structural helpers (`append`, `remove`, and `move`) accept dynamic arrays. Tuples, including tuples with a variadic rest, require slot edits or a whole-field replacement so their fixed positions and lengths remain intact.
+
+Validation runs only on submit. Generated constraints produce native Effect schemas. The session decodes the captured draft with `Schema.decodeUnknownEffect` before submitting, mapping schema issues to field and root errors. Inertia awaits the visit lifecycle, maps scoped Laravel errors into the session, forwards progress, and cancels the instance's own visit on cancellation/unmount. A driver returns an Effect producing `success`, `invalid`, `cancelled`, `failure`, or `defect`; provide `onResult` to react to the outcome. Root form errors are available at `state.errors['']`; field errors are available through field contexts.
+
+Native schema record keys containing dots, brackets, or other segments that field paths cannot represent produce root validation errors. Their validation messages remain available without turning an invalid draft into a submission defect.
+
+Generated constraint schemas are compiled once per definition object and reused across submissions and sessions. Definitions are readonly; supply a new definition object when changing rules. Schema construction runs inside the submission Effect, so construction defects settle the submission instead of leaving it pending.
+
+Execution snapshots freeze the result envelope and validation messages while preserving typed success/error payload identity. Domain payloads can contain cycles, symbols, or application objects; Fieldwork does not clone them. React installs committed submission options before child layout effects can submit, and metadata-only definition updates preserve bound input identity and focus.
+
+Hidden or unmounted React owners suppress progress and result callbacks. Notifications produced before layout activation are deferred until the owner is active; cancellation, reset, and replacement submissions discard stale queued callbacks.
+
+An Inertia global `before` veto settles as `cancelled`, even though Inertia emits no visit completion callback. Detection observes the native event in the window capture phase, is scoped to the exact visit, and supports asynchronous dispatch by injected routers. Injected routers need only `visit` and must follow Inertia's visit lifecycle. Cancellation during `before` dispatch prevents visit acceptance.
+
+An Inertia transport payload must be a plain record or `FormData`. Nested values support plain records, arrays, strings, booleans, null/undefined, finite numbers, valid dates, and files/blobs. Unsupported application objects, nonfinite numbers, invalid dates, and cyclic containers return `failure` before starting a visit.

@@ -59,6 +59,7 @@ export default {
                     'packages/generator/**',
                     'benchmarks/**',
                     'packages/laravel/js/**',
+                    'apps/docs/*.ts',
                     '**/generator.ts',
                     '**/vite.config.ts',
                     '**/fieldwork.config.ts',

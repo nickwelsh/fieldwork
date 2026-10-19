@@ -1,0 +1,172 @@
+---
+title: Quickstart
+description: Generate and render a Laravel profile form with typed React controls.
+---
+
+This walkthrough assumes a Laravel application with React and Inertia and the [local packages installed](./installation.mdx). Files belong to that application.
+
+## 1. Write a FormRequest
+
+```php title="app/Http/Requests/UpdateProfileRequest.php"
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+final class UpdateProfileRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user() !== null;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email'],
+        ];
+    }
+}
+```
+
+The application must protect the route and authorize the record being changed. Generation instantiates requests to read metadata; it does not run authorization.
+
+## 2. Create the controls
+
+```tsx title="resources/js/forms/components.tsx"
+import { useId } from 'react';
+import { useFieldContext, useFormContext, type FieldProps } from '@fieldwork/react';
+
+export function TextField({ label, helpText }: FieldProps<string>) {
+    const field = useFieldContext<string>();
+    const id = useId();
+    const errorId = `${id}-errors`;
+    return (
+        <div>
+            <label htmlFor={id}>{label}</label>
+            <input
+                id={id}
+                name={field.name}
+                value={field.value}
+                onChange={(event) => field.setValue(event.target.value)}
+                onBlur={field.touch}
+                aria-invalid={field.errors.length > 0}
+                aria-describedby={field.errors.length > 0 ? errorId : undefined}
+            />
+            {helpText && <p>{helpText}</p>}
+            <div id={errorId} role="alert">
+                {field.errors.join(' ')}
+            </div>
+        </div>
+    );
+}
+
+export function SubmitButton({ label = 'Save' }: { label?: string }) {
+    const form = useFormContext();
+    return (
+        <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(busy) => (
+                <button type="submit" disabled={busy}>
+                    {label}
+                </button>
+            )}
+        </form.Subscribe>
+    );
+}
+```
+
+## 3. Register components and submission
+
+```ts title="resources/js/forms/index.ts"
+import { createFieldwork } from '@fieldwork/react';
+import { inertia } from '@fieldwork/inertia';
+import { TextField, SubmitButton } from './components';
+
+const fieldwork = createFieldwork({
+    fieldComponents: { TextField },
+    formComponents: { SubmitButton },
+    submissions: { web: inertia({ visit: { preserveScroll: true } }) },
+    submitComponent: 'SubmitButton',
+});
+
+export default fieldwork;
+export const { Form, useForm } = fieldwork;
+```
+
+Keep the default export and direct registry objects statically inspectable. Their literal keys become generated component enum cases and typed form bindings.
+
+## 4. Configure generation
+
+```ts title="fieldwork.config.ts"
+import { defineConfig } from '@fieldwork/generator';
+import { laravel } from '@fieldwork/laravel/generator';
+import { react } from '@fieldwork/react/generator';
+import { inertia } from '@fieldwork/inertia/generator';
+
+const app = laravel();
+
+export default defineConfig({
+    sources: { app },
+    framework: react('./resources/js/forms/index.ts'),
+    submissions: { web: inertia({ bindings: app.http() }) },
+    output: {
+        forms: './resources/js/generated/forms',
+        actions: './resources/js/generated/actions',
+    },
+});
+```
+
+The published PHP config defaults to discovering `app/Http/Requests` and generating component enums in `App\Enums`. Configure only the component types your registry supports. This example needs a string mapping; an `email` mapping must not supply extra props unless your control declares them:
+
+```php title="config/fieldwork.php"
+<?php
+
+return [
+    'requests' => ['app/Http/Requests'],
+    'enums' => [
+        'fields' => 'App\\Enums\\FormField',
+        'components' => 'App\\Enums\\FormComponent',
+        'groups' => null,
+    ],
+    'fields' => [
+        'types' => ['string' => 'TextField'],
+        'rules' => [],
+        'fallbackType' => 'string',
+    ],
+];
+```
+
+## 5. Bind a named route
+
+```php title="routes/web.php"
+use App\Http\Requests\UpdateProfileRequest;
+use Illuminate\Support\Facades\Route;
+
+Route::patch('/profile', function (UpdateProfileRequest $request) {
+    $request->user()->update($request->validated());
+    return back();
+})->middleware('auth')->name('profile.update');
+```
+
+```sh
+pnpm exec fieldwork generate
+```
+
+Generation writes enums before extraction, then definitions and actions. The named `profile.update` route produces an `update` action in the `profile` module.
+
+## 6. Render the form
+
+```tsx title="resources/js/pages/profile.tsx"
+import { Form } from '../forms';
+import { update } from '../generated/actions/profile';
+
+export function Profile({ user }: { user: { name: string; email: string } }) {
+    return <Form form={update.form()} defaultValues={{ name: user.name, email: user.email }} />;
+}
+```
+
+Without children, Fieldwork renders the fields in order and appends the submit component. On submit it validates the captured draft, performs the Inertia visit, and maps Laravel errors back to controls. For record routes, pass parameters to `update.form({ user: user.id })`.
+
+Use [custom layouts](../react/forms.mdx), [groups](../react/groups.mdx), and [server validation](../validation.mdx) as the form grows. In CI, run `pnpm exec fieldwork generate --check` to detect stale generated files.

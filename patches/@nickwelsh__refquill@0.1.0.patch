@@ -1,0 +1,15 @@
+diff --git a/src/typescript.mjs b/src/typescript.mjs
+index f68bb77af86557a842412b9920ef15e632eb288c..fbec4dd7a7d2b731d5ec02b8cc1bc6c9a916e73e 100644
+--- a/src/typescript.mjs
++++ b/src/typescript.mjs
+@@ -62,7 +62,9 @@ export async function analyze(config) {
+     for (const program of context.programs) programs.add(program);
+     const node = context.getSymbolFromReflection(reflection)?.declarations?.[0];
+     if (node) compilerDeclarations.set(reflection.id, { node, context });
+-    if (node?.type) annotations.set(reflection.id, { node: node.type, context: context.withScope(reflection) });
++    // Annotation resolution uses the checker and project symbol map, not the reflection scope.
++    // Re-exported/inherited declarations can be created outside their parent scope.
++    if (node?.type) annotations.set(reflection.id, { node: node.type, context });
+     if (node && ts.isVariableDeclaration(node)) variableKinds.set(reflection.id, node.parent.flags & ts.NodeFlags.Const ? 'const' : node.parent.flags & ts.NodeFlags.Let ? 'let' : 'var');
+   });
+   app.converter.on(Converter.EVENT_CREATE_PARAMETER, (context, reflection, node) => {

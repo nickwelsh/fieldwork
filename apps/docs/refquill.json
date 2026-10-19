@@ -1,0 +1,29 @@
+{
+    "$schema": "./node_modules/@nickwelsh/refquill-schema/config.schema.json",
+    "title": "Fieldwork API reference",
+    "sourceRoot": "../..",
+    "output": "generated/api.json",
+    "inputs": [
+        {
+            "language": "typescript",
+            "name": "typescript",
+            "tsconfig": "../../tsconfig.json",
+            "entryPoints": [
+                "../../packages/core/src/index.ts",
+                "../../packages/react/src/index.ts",
+                "../../packages/react/src/generator.ts",
+                "../../packages/generator/src/index.ts",
+                "../../packages/generator/src/react.ts",
+                "../../packages/inertia/src/index.ts",
+                "../../packages/inertia/src/effect.ts",
+                "../../packages/inertia/src/generator.ts",
+                "../../packages/laravel/js/generator.ts"
+            ]
+        },
+        {
+            "language": "php",
+            "name": "laravel",
+            "paths": ["../../packages/laravel/src"]
+        }
+    ]
+}

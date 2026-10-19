@@ -1,0 +1,54 @@
+---
+title: Callbacks and results
+description: Submit through an application callback and preserve cancellation and server authority.
+---
+
+A callback descriptor is useful when an integration owns execution and can expose a portable definition without depending on a specific registry or transport.
+
+```ts
+import type { FormDescriptor, SubmissionCallback } from '@fieldwork/core';
+
+type ProfileValues = { name: string };
+
+const submit: SubmissionCallback<ProfileValues> = async (values, { signal }) => {
+    const response = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+        signal,
+    });
+    if (!response.ok) {
+        return { status: 'failure', error: new Error(`Save failed: ${response.status}`) };
+    }
+    return { status: 'success' };
+};
+
+// definition is your FormDefinition<ProfileValues>.
+const profileForm = {
+    version: 1,
+    definition,
+    submission: { submit },
+} satisfies FormDescriptor<ProfileValues>;
+```
+
+The example assumes an application endpoint whose successful response means the save was accepted. Supply your application's authentication and CSRF protection. Map a backend validation response to `{ status: 'invalid', errors }` after validating that response's shape; Fieldwork does not assume a particular HTTP error format.
+
+## Callback contract
+
+The callback receives decoded values and `{ signal, onProgress }`. It can return a `SubmissionResult` directly or through a Promise. Use `SubmissionCallback<Output, Success, Error>` when the result has typed domain payloads.
+
+- `success` can carry `value`.
+- `invalid` carries field errors, with `''` for a root error.
+- `failure` carries an expected `error`.
+- `cancelled` indicates interrupted execution.
+- `defect` represents unexpected failure.
+
+Return expected failures explicitly. A thrown exception or rejected Promise settles as a defect. Never report success for a merely optimistic write when the server can still reject it.
+
+## Lifetime
+
+React commits callback updates for future submissions. An active submission retains the handler and values it captured. Passing a new defaults object on rerender does not reset the draft; use a key or an explicit reset to change records.
+
+Cancellation aborts the signal and suppresses late progress and results. The callback owns the underlying abort integration and cleanup. Cancelling a wait does not undo an already accepted request or durably queued mutation.
+
+For native Effect operations, service requirements, and typed decoding, use [headless sessions and Effect](../advanced/headless.mdx). For JSON-only producers, use [portable descriptors](../advanced/descriptors.mdx).

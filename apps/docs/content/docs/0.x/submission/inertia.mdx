@@ -1,0 +1,69 @@
+---
+title: Inertia submission
+description: Bind generated HTTP actions to Inertia visits, errors, progress, and cancellation.
+---
+
+The runtime adapter submits validated values using Inertia's visit lifecycle. Its generator adapter connects named Laravel HTTP operations to portable bindings.
+
+## Register the runtime
+
+```ts
+import { inertia } from '@fieldwork/inertia';
+
+const submissions = {
+    web: inertia({ visit: { preserveScroll: true, errorBag: 'profile' } }),
+};
+```
+
+Pass `submissions` to `createFieldwork`. The key `web` must match the key in the generator configuration or descriptor. For a form without a generated action, use `bindForm`:
+
+```ts
+import { bindForm } from '@fieldwork/core';
+
+const profileForm = bindForm(definition, {
+    driver: 'web',
+    binding: { kind: 'http', url: '/profile', method: 'patch' },
+});
+```
+
+The application supplies the `definition` and imports the registered `Form` to render `profileForm`. A per-form `submission` override can replace the descriptor's executor.
+
+## Observe results
+
+Use `onResult` for the settled outcome and `onProgress` for uploads:
+
+```tsx
+<Form
+    form={update.form()}
+    onResult={(result) => {
+        if (result.status === 'success') showSavedMessage();
+    }}
+    onProgress={(progress) => showUploadProgress(progress)}
+/>
+```
+
+`update`, `showSavedMessage`, and `showUploadProgress` are application imports. State is also available from `form.Subscribe` and `useFormContext`.
+
+| Result      | Meaning                                      |
+| ----------- | -------------------------------------------- |
+| `success`   | The visit reports success                    |
+| `invalid`   | Laravel/Inertia returned validation errors   |
+| `cancelled` | The visit or session was cancelled or vetoed |
+| `failure`   | An expected transport or payload failure     |
+| `defect`    | An unexpected execution defect               |
+
+Fieldwork manages the visit's method, data, completion callbacks, cancellation, errors, and upload progress. Configure other options through `visit`. An optional `router` permits an injected router that follows Inertia's lifecycle.
+
+## Errors and uploads
+
+Scoped Laravel errors become session errors. Render field errors through `useFieldContext`; root errors use the empty path `state.errors['']`. Select an `errorBag` when multiple forms share a page.
+
+The transport accepts a plain record or `FormData`. Nested values support plain records, arrays, strings, booleans, null/undefined, finite numbers, valid dates, and files/blobs. Unsupported class instances, cycles, invalid dates, and nonfinite numbers fail before the visit starts.
+
+## Cancellation and concurrency
+
+The form cancels its own visit when cancelled or unmounted. Global `before` vetoes settle as cancelled, including when the router emits no completion callback. Aborting during `before` prevents acceptance.
+
+Duplicate submissions share the active validation and submission. A submitted draft is captured; later edits remain editable and dirty. Stale server errors do not overwrite fields changed since submission. Late progress and outcomes are suppressed after cancellation.
+
+The [Inertia Effect adapter](./effect.mdx) integrates directly with an Effect-native router and has its own navigation outcome semantics.

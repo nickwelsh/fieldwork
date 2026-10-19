@@ -1,0 +1,62 @@
+---
+title: Laravel configuration
+description: Configure request discovery, generated enum targets, field mappings, and profiles.
+---
+
+Publish `config/fieldwork.php` with `php artisan vendor:publish --tag=fieldwork-config`. Laravel discovers the service provider from the Composer package.
+
+## Discover requests
+
+```php
+return [
+    'requests' => ['app/Http/Requests'],
+    'enums' => [
+        'fields' => App\Enums\FormField::class,
+        'components' => App\Enums\FormComponent::class,
+        'groups' => App\Enums\FormGroup::class,
+    ],
+    'profiles' => [
+        'fixtures' => ['requests' => ['tests/Fixtures']],
+    ],
+    'fields' => [
+        'types' => [
+            'string' => App\Enums\FormField::TextField,
+            'boolean' => App\Enums\FormField::CheckboxField,
+        ],
+        'rules' => [],
+        'fallbackType' => 'string',
+    ],
+];
+```
+
+Only register component names that the React registry supplies. The full default config includes number, date, enum, and file mappings; remove or replace unsupported controls.
+
+## Enum preparation
+
+Enum target values are class names, or `null` to disable a registry. Files resolve through the application's Composer PSR-4 mappings. Run `fieldwork fields` for enums only, or `fieldwork generate` for the complete pipeline.
+
+The integration reads the declarative enum target array and its PHP imports before booting Laravel. It writes enum cases from the frontend registry, then extracts requests. Requests and configuration can therefore reference generated enum cases on the first run.
+
+Keep enum targets declarative. Configuration closures are unnecessary. Clear Laravel's cached configuration after changing discovery or mappings:
+
+```sh
+php artisan config:clear
+```
+
+## Select a profile
+
+```ts
+import { laravel } from '@fieldwork/laravel/generator';
+
+const app = laravel({ root: './backend', profile: 'fixtures' });
+```
+
+The selected profile changes backend discovery. Request directories remain in PHP configuration; the JavaScript config selects the backend root and profile. Paths in `fieldwork.config.ts` resolve from that file's directory.
+
+## Separate extraction and HTTP discovery
+
+`fieldwork:export` extracts portable schemas and diagnostics. `fieldwork:http` discovers HTTP operations separately. The Node source exposes `app.http()` for generator integrations that need routes; schema-only generation can omit submission integrations.
+
+FormRequest extraction does not run validation or authorization. Write rules that can be described without authenticated or live request state. A request whose metadata depends on a current user, database result, or submitted value may need a dedicated source driver. Keep authorization in the actual request lifecycle.
+
+See [field mappings](./rules.mdx) and [generation](./generation.mdx) for the complete application configuration.

@@ -1,0 +1,20 @@
+{
+    "title": "0.x",
+    "root": "version",
+    "version": {
+        "status": "latest"
+    },
+    "pages": [
+        "index",
+        "getting-started",
+        "react",
+        "validation",
+        "submission",
+        "laravel",
+        "advanced",
+        "development",
+        "troubleshooting",
+        "api",
+        "..."
+    ]
+}
