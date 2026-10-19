@@ -49,13 +49,17 @@ for (const manifest of manifests) {
 }
 
 const releaseTag = process.env['RELEASE_TAG'];
+const releasePrerelease = process.env['RELEASE_PRERELEASE'];
 if (releaseTag !== undefined && releaseTag !== '') {
     assert.equal(releaseTag, `v${version}`, 'Release tag must match every package version.');
-    assert.equal(
-        process.env['RELEASE_PRERELEASE'],
-        String(version.includes('-')),
-        'GitHub prerelease status must match the version.',
-    );
+    // A pushed tag can deploy docs before a GitHub release exists.
+    if (releasePrerelease !== undefined && releasePrerelease !== '') {
+        assert.equal(
+            releasePrerelease,
+            String(version.includes('-')),
+            'GitHub prerelease status must match the version.',
+        );
+    }
 }
 const distTag = version.includes('-') ? 'next' : 'latest';
 const command = process.argv.at(2);
@@ -178,7 +182,10 @@ if (command === 'check' || command === 'smoke' || command === 'stage') {
     }
     if (command === 'stage') {
         assert.ok(
-            releaseTag !== undefined && releaseTag !== '',
+            releaseTag !== undefined &&
+                releaseTag !== '' &&
+                releasePrerelease !== undefined &&
+                releasePrerelease !== '',
             'Staging requires RELEASE_TAG and RELEASE_PRERELEASE.',
         );
         for (const archive of archives) {

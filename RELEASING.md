@@ -88,7 +88,7 @@ To verify a branch manually, run `gh workflow run check.yml --repo nickwelsh/for
 
 1. Merge the rename and publication setup to `main`. Wait for CI and the initial Composer mirror sync to pass.
 2. Keep all five public npm packages at the same version. Update their internal peer ranges when changing versions.
-3. Push the matching `vVERSION` tag. This runs checks and deploys documentation.
+3. Push the matching `vVERSION` tag. This runs checks and deploys documentation. CI rejects tags that do not match all five package versions before deploying docs.
 4. Publish a GitHub release for that tag. Mark it as a prerelease exactly when its version includes a prerelease suffix.
 5. `release.yml` reruns verification, stages the exact checked npm tarballs with OIDC, and mirrors the Composer tag. It never approves npm stages. Stable versions use `latest`; prereleases use `next`.
 6. Inspect and approve the staged implementation versions on npm using your own account and 2FA when ready. The Composer tag is public when mirrored, independently of npm approval.
