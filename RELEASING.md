@@ -82,6 +82,8 @@ Use an account token with Workers Scripts Edit, plus Workers Routes Edit and Zon
 
 Every main push and pull request builds docs, checks their types, verifies authored routes, API references, search, Markdown, styles, source links and 404 responses in Miniflare, then dry-runs `cf deploy`. A pushed `v*` tag deploys the exact verified artifact to the `formbraid-docs` Worker at `https://docs.nickwelsh.me/formbraid/`. Branch and PR jobs do not receive deployment secrets. This preserves the existing tag deployment policy: docs deployment does not wait for npm staging approval.
 
+To verify a branch manually, run `gh workflow run check.yml --repo nickwelsh/formbraid --ref BRANCH`. Manual Check runs never deploy docs or synchronize the Composer mirror.
+
 ## Stage a release
 
 1. Merge the rename and publication setup to `main`. Wait for CI and the initial Composer mirror sync to pass.
