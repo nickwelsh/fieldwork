@@ -38,16 +38,26 @@ No npm token secret is needed. Configure the publisher shortly before staging th
 
 ## Configure the Composer mirror
 
-The mirror repository must be empty before its first sync. Treat it as read-only; develop in the monorepo. Add a dedicated write-enabled deploy key to the mirror and store its private half as a secret in the source repository:
+The mirror repository must be empty before its first sync. Treat it as read-only; develop in the monorepo.
+
+GitHub disables deploy keys by default for new organizations. Before creating the key, open [Formbraid's member privileges](https://github.com/organizations/Formbraid/settings/member_privileges), find **Deploy keys**, select **Enabled**, and save. This is an organization-wide setting. See [GitHub's deploy-key policy documentation](https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-organization-settings/restricting-deploy-keys-in-your-organization).
+
+Add a dedicated write-enabled public key to the mirror and store its matching private half as a secret in the source repository. Run this block as a subshell so it stops immediately on failure without changing your interactive shell's options:
 
 ```sh
-key_dir=$(mktemp -d)
-ssh-keygen -t ed25519 -C formbraid-composer-mirror -N '' -f "$key_dir/mirror"
-gh repo deploy-key add "$key_dir/mirror.pub" --repo formbraid/laravel --title formbraid-composer-mirror --allow-write
-gh secret set PHP_MIRROR_SSH_KEY --repo nickwelsh/formbraid < "$key_dir/mirror"
-rm "$key_dir/mirror" "$key_dir/mirror.pub"
-rmdir "$key_dir"
+(
+    set -eu
+    key_dir=$(mktemp -d)
+    printf 'Temporary key directory: %s\n' "$key_dir"
+    ssh-keygen -t ed25519 -C formbraid-composer-mirror -N '' -f "$key_dir/mirror"
+    gh repo deploy-key add "$key_dir/mirror.pub" --repo formbraid/laravel --title formbraid-composer-mirror --allow-write
+    gh secret set PHP_MIRROR_SSH_KEY --repo nickwelsh/formbraid < "$key_dir/mirror"
+    rm "$key_dir/mirror" "$key_dir/mirror.pub"
+    rmdir "$key_dir"
+)
 ```
+
+If a command fails, subsequent commands do not run and the key files remain in the printed temporary directory for retry. If an earlier attempt reported that deploy keys are disabled but still saved the secret, enable the policy and rerun the entire block to replace that unusable secret with a matching pair.
 
 After these changes reach `main`, successful push CI automatically splits `packages/laravel` into the mirror's `main` branch. You can also start that sync manually:
 
