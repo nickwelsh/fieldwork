@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promis
 import os from 'node:os';
 import path from 'node:path';
 import ts from 'typescript-api';
+import { format } from 'oxfmt';
 import { Deferred, Effect, Result, Schema } from 'effect';
 import { NodeServices } from '@effect/platform-node';
 import { describe, expect, it, vi } from 'vite-plus/test';
@@ -69,6 +70,38 @@ function firstGenerated(files: ReadonlyArray<GeneratedFile>): GeneratedFile {
         throw new Error('Missing generated form.');
     }
     return file;
+}
+
+async function generatedSource(contents: string) {
+    const formatted = await format('generated.ts', contents, { singleQuote: true });
+    expect(formatted.errors).toStrictEqual([]);
+    expect(ts.transpileModule(formatted.code, { reportDiagnostics: true }).diagnostics).toStrictEqual([]);
+    const source = ts.createSourceFile('generated.ts', formatted.code, ts.ScriptTarget.ESNext, true);
+    const strings: Array<string> = [];
+    function visit(node: ts.Node) {
+        if (ts.isStringLiteral(node)) {
+            expect(node.getText(source)).not.toMatch(/[<>\u2028\u2029]/u);
+            strings.push(node.text);
+        }
+        ts.forEachChild(node, visit);
+    }
+    visit(source);
+    return { source, strings };
+}
+
+function generatedDefinition(contents: string): unknown {
+    const source = ts.createSourceFile('generated.ts', contents, ts.ScriptTarget.ESNext, true);
+    const statement = source.statements.find(ts.isVariableStatement);
+    const initializer = statement?.declarationList.declarations[0]?.initializer;
+    if (initializer === undefined || !ts.isCallExpression(initializer)) {
+        throw new Error('Missing generated form declaration.');
+    }
+    const [body] = initializer.arguments;
+    if (body === undefined) {
+        throw new Error('Missing generated form definition.');
+    }
+    const value: unknown = JSON.parse(body.getText(source));
+    return value;
 }
 
 function firstForm(source: Extraction): Extraction['forms'][number] {
@@ -790,6 +823,68 @@ export {nullableRead};
         expect(contents).toContain('version: 1 as const');
         expect(contents.match(/import type \{ FormDescriptor \}/gu)).toHaveLength(1);
         expect(contents).not.toContain('bindForm');
+    });
+
+    it.each([
+        '</script><script>globalThis.injected = true</script>',
+        '"\'; globalThis.injected = true; // \\\n\r\t',
+        '\u2028\u2029',
+    ])('preserves hostile form metadata as literal data: %j', async (value) => {
+        expect.hasAssertions();
+        const form = {
+            ...sourceForm,
+            defaultValues: { ...sourceForm.defaultValues, email: value },
+            fields: {
+                ...sourceForm.fields,
+                email: {
+                    ...sourceForm.fields.email,
+                    label: value,
+                    helpText: value,
+                    type: 'enum' as const,
+                    constraints: { options: [value] },
+                },
+            },
+        };
+        const { contents } = firstGenerated(generateWith(manifest, { ...extraction, forms: [form] }));
+        const { source, strings } = await generatedSource(contents);
+        expect(source.statements).toHaveLength(3);
+        expect(strings).toContain(value);
+        expect(generatedDefinition(contents)).toStrictEqual(form);
+    });
+
+    it.each([
+        '</script><script>globalThis.injected = true</script>',
+        '"\'; globalThis.injected = true; // \\\n\r\t',
+        '\u2028\u2029',
+    ])('preserves action paths, parameter names, and driver names as literal data: %j', async (value) => {
+        expect.hasAssertions();
+        const forms = `generated/${value}/forms`;
+        const { contents } = firstGenerated(
+            emitActions(
+                [
+                    {
+                        name: 'profile.update',
+                        schema: sourceForm.id,
+                        parameters: [{ name: value }],
+                        binding: '{}',
+                        imports: [],
+                    },
+                ],
+                extraction,
+                { ...context, output: { ...context.output, forms }, submission: value },
+            ),
+        );
+        const { source, strings } = await generatedSource(contents);
+        expect(source.statements).toHaveLength(4);
+        expect(strings.filter((literal) => literal === value)).toHaveLength(2);
+        const relative = path
+            .relative(
+                path.resolve(exampleRoot, context.output.actions),
+                path.resolve(exampleRoot, forms, 'UpdateProfileRequest.js'),
+            )
+            .split(path.sep)
+            .join('/');
+        expect(strings.filter((literal) => literal === relative)).toHaveLength(2);
     });
 
     it('emits literal definitions, optional route parameters, and enum blank draft values', () => {
