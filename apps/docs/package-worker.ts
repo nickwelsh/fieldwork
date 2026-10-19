@@ -15,7 +15,7 @@ const root = process.cwd();
 await cleanBuildOutputDir(root);
 const assets = getWorkerAssetsDir(root);
 await mkdir(assets, { recursive: true });
-await cp(path.join(root, 'dist/public'), path.join(assets, 'fieldwork'), { recursive: true });
+await cp(path.join(root, 'dist/public'), path.join(assets, 'formbraid'), { recursive: true });
 await writeRootConfig(root, undefined, { mode: 'production', isPreview: false });
 await writeWorkerConfig({ root, config: config.worker });
 await readBuildOutput(root);

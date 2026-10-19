@@ -1,4 +1,4 @@
-import type { GroupFields } from '@fieldwork/react';
+import type { GroupFields } from '@formbraid/react';
 
 type Choice = '' | 'home' | 'work';
 interface EmptyInterface {

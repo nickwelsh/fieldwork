@@ -1,12 +1,12 @@
 import { defineConfig } from '@nickwelsh/docs-base';
 
 export default defineConfig({
-    name: 'Fieldwork',
+    name: 'Formbraid',
     origin: 'https://docs.nickwelsh.me',
-    githubUrl: 'https://github.com/nickwelsh/fieldwork',
+    githubUrl: 'https://github.com/nickwelsh/formbraid',
     githubBranch: process.env.GITHUB_SHA ?? 'main',
     githubContentPath: 'apps/docs/content/docs',
-    basePath: '/fieldwork',
+    basePath: '/formbraid',
     content: './content/docs',
     refquill: [
         {

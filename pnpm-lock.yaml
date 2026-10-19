@@ -138,19 +138,19 @@ importers:
 
   examples/react:
     dependencies:
-      '@fieldwork/core':
+      '@formbraid/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@fieldwork/generator':
+      '@formbraid/generator':
         specifier: workspace:*
         version: link:../../packages/generator
-      '@fieldwork/inertia':
+      '@formbraid/inertia':
         specifier: workspace:*
         version: link:../../packages/inertia
-      '@fieldwork/laravel':
+      '@formbraid/laravel':
         specifier: workspace:*
         version: link:../../packages/laravel
-      '@fieldwork/react':
+      '@formbraid/react':
         specifier: workspace:*
         version: link:../../packages/react
       effect:
@@ -184,7 +184,7 @@ importers:
       '@effect/platform-node':
         specifier: 4.0.2
         version: 4.0.2(effect@4.0.2)(redis@6.3.0)
-      '@fieldwork/core':
+      '@formbraid/core':
         specifier: workspace:*
         version: link:../core
       effect:
@@ -202,14 +202,14 @@ importers:
 
   packages/inertia:
     dependencies:
-      '@fieldwork/core':
+      '@formbraid/core':
         specifier: workspace:*
         version: link:../core
       effect:
         specifier: 4.0.2
         version: 4.0.2
     devDependencies:
-      '@fieldwork/generator':
+      '@formbraid/generator':
         specifier: workspace:*
         version: link:../generator
       '@inertiajs/core':
@@ -218,7 +218,7 @@ importers:
 
   packages/laravel:
     dependencies:
-      '@fieldwork/core':
+      '@formbraid/core':
         specifier: workspace:*
         version: link:../core
       effect:
@@ -228,13 +228,13 @@ importers:
       '@effect/platform-node':
         specifier: 4.0.2
         version: 4.0.2(effect@4.0.2)(redis@6.3.0)
-      '@fieldwork/generator':
+      '@formbraid/generator':
         specifier: workspace:*
         version: link:../generator
 
   packages/react:
     dependencies:
-      '@fieldwork/core':
+      '@formbraid/core':
         specifier: workspace:*
         version: link:../core
       effect:
@@ -244,7 +244,7 @@ importers:
         specifier: ^19.0.0
         version: 19.3.0
     devDependencies:
-      '@fieldwork/generator':
+      '@formbraid/generator':
         specifier: workspace:*
         version: link:../generator
 

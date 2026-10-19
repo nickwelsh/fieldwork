@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel\Tests;
+namespace Formbraid\Laravel\Tests;
 
-use Fieldwork\Laravel\Field;
-use Fieldwork\Laravel\FieldGroup;
-use Fieldwork\Laravel\RequestExtractor;
+use Formbraid\Laravel\Field;
+use Formbraid\Laravel\FieldGroup;
+use Formbraid\Laravel\RequestExtractor;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory;
@@ -24,7 +24,7 @@ final class RequestExtractorTest extends TestCase
 {
     private function extractor(): RequestExtractor
     {
-        return new RequestExtractor(require __DIR__.'/../config/fieldwork.php');
+        return new RequestExtractor(require __DIR__.'/../config/formbraid.php');
     }
 
     public function test_rules_infer_components_constraints_and_labels_without_fields_metadata(): void
@@ -126,7 +126,7 @@ final class RequestExtractorTest extends TestCase
 
     public function test_wildcard_required_children_reject_serialized_sparse_null_positions(): void
     {
-        $config = require __DIR__.'/../config/fieldwork.php';
+        $config = require __DIR__.'/../config/formbraid.php';
         $config['fields']['types']['array'] = 'ArrayField';
         $request = new class
         {
@@ -146,7 +146,7 @@ final class RequestExtractorTest extends TestCase
 
     public function test_array_options_keep_collection_types_defaults_and_element_membership(): void
     {
-        $config = require __DIR__.'/../config/fieldwork.php';
+        $config = require __DIR__.'/../config/formbraid.php';
         $config['fields']['types']['array'] = 'OptionsField';
         $request = new class
         {
@@ -170,7 +170,7 @@ final class RequestExtractorTest extends TestCase
 
     public function test_associative_arrays_infer_records_preserve_cardinality_and_initialize_parents_first(): void
     {
-        $config = require __DIR__.'/../config/fieldwork.php';
+        $config = require __DIR__.'/../config/formbraid.php';
         $config['fields']['types']['array'] = 'ContainerField';
         $request = new class
         {
@@ -198,7 +198,7 @@ final class RequestExtractorTest extends TestCase
 
     public function test_explicit_container_types_and_object_component_mappings_override_inference(): void
     {
-        $config = require __DIR__.'/../config/fieldwork.php';
+        $config = require __DIR__.'/../config/formbraid.php';
         $config['fields']['types']['array'] = 'ArrayField';
         $config['fields']['types']['object'] = 'ObjectField';
         $request = new class

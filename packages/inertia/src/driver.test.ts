@@ -3,7 +3,7 @@ import { vi, describe, expect, it } from 'vite-plus/test';
 import { Effect, Fiber } from 'effect';
 import { router } from '@inertiajs/core';
 import type { GlobalEvent, PendingVisit } from '@inertiajs/core';
-import type { UploadProgress } from '@fieldwork/core';
+import type { UploadProgress } from '@formbraid/core';
 
 import type { InertiaOptions, InertiaVisitOptions } from './driver.js';
 

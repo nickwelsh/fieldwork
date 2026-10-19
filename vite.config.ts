@@ -57,12 +57,13 @@ export default {
             {
                 files: [
                     'packages/generator/**',
+                    'scripts/**',
                     'benchmarks/**',
                     'packages/laravel/js/**',
                     'apps/docs/*.ts',
                     '**/generator.ts',
                     '**/vite.config.ts',
-                    '**/fieldwork.config.ts',
+                    '**/formbraid.config.ts',
                 ],
                 env: { node: true, browser: false },
                 rules: { 'compat/compat': 'off', 'import/no-nodejs-modules': 'off' },
@@ -329,18 +330,18 @@ export default {
     },
     resolve: {
         alias: {
-            '@fieldwork/example': fileURLToPath(new URL('examples/react/src', import.meta.url)),
-            '@fieldwork/laravel/generator': fileURLToPath(new URL('packages/laravel/js/generator.ts', import.meta.url)),
-            '@fieldwork/react/generator': fileURLToPath(new URL('packages/react/src/generator.ts', import.meta.url)),
-            '@fieldwork/inertia/generator': fileURLToPath(
+            '@formbraid/example': fileURLToPath(new URL('examples/react/src', import.meta.url)),
+            '@formbraid/laravel/generator': fileURLToPath(new URL('packages/laravel/js/generator.ts', import.meta.url)),
+            '@formbraid/react/generator': fileURLToPath(new URL('packages/react/src/generator.ts', import.meta.url)),
+            '@formbraid/inertia/generator': fileURLToPath(
                 new URL('packages/inertia/src/generator.ts', import.meta.url),
             ),
-            '@fieldwork/generator/react': fileURLToPath(new URL('packages/generator/src/react.ts', import.meta.url)),
-            '@fieldwork/generator': fileURLToPath(new URL('packages/generator/src/index.ts', import.meta.url)),
-            '@fieldwork/inertia/effect': fileURLToPath(new URL('packages/inertia/src/effect.ts', import.meta.url)),
-            '@fieldwork/inertia': fileURLToPath(new URL('packages/inertia/src/index.ts', import.meta.url)),
-            '@fieldwork/react': fileURLToPath(new URL('packages/react/src/index.ts', import.meta.url)),
-            '@fieldwork/core': fileURLToPath(new URL('packages/core/src/index.ts', import.meta.url)),
+            '@formbraid/generator/react': fileURLToPath(new URL('packages/generator/src/react.ts', import.meta.url)),
+            '@formbraid/generator': fileURLToPath(new URL('packages/generator/src/index.ts', import.meta.url)),
+            '@formbraid/inertia/effect': fileURLToPath(new URL('packages/inertia/src/effect.ts', import.meta.url)),
+            '@formbraid/inertia': fileURLToPath(new URL('packages/inertia/src/index.ts', import.meta.url)),
+            '@formbraid/react': fileURLToPath(new URL('packages/react/src/index.ts', import.meta.url)),
+            '@formbraid/core': fileURLToPath(new URL('packages/core/src/index.ts', import.meta.url)),
         },
     },
     test: {

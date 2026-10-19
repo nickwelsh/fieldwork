@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel;
+namespace Formbraid\Laravel;
 
 use InvalidArgumentException;
 
@@ -21,13 +21,13 @@ final readonly class Configuration
         $fields = $config['fields'] ?? [];
         $directories = $config['requests'] ?? [];
         if (! is_array($fields) || ! is_array($directories)) {
-            throw new InvalidArgumentException('Invalid Fieldwork fields or requests configuration.');
+            throw new InvalidArgumentException('Invalid Formbraid fields or requests configuration.');
         }
         $types = $fields['types'] ?? [];
         $rules = $fields['rules'] ?? [];
         $fallback = $fields['fallbackType'] ?? null;
         if (! is_array($types) || ! is_array($rules) || $fallback !== null && ! is_string($fallback)) {
-            throw new InvalidArgumentException('Invalid Fieldwork type mappings.');
+            throw new InvalidArgumentException('Invalid Formbraid type mappings.');
         }
         $requests = [];
         foreach ($directories as $directory) {

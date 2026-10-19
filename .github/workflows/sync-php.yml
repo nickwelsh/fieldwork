@@ -1,0 +1,75 @@
+name: Sync Composer mirror
+
+on:
+  workflow_run:
+    workflows: [Check]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+    secrets:
+      PHP_MIRROR_SSH_KEY:
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: formbraid-composer-mirror
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: >-
+      inputs.ref != '' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.ref || github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea # v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - run: composer --working-dir=packages/laravel validate --strict --no-check-lock
+      - name: Configure mirror authentication
+        env:
+          PHP_MIRROR_SSH_KEY: ${{ secrets.PHP_MIRROR_SSH_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -n "$PHP_MIRROR_SSH_KEY"
+          install -d -m 700 "$RUNNER_TEMP/php-mirror-ssh"
+          printf '%s\n' "$PHP_MIRROR_SSH_KEY" > "$RUNNER_TEMP/php-mirror-ssh/key"
+          chmod 600 "$RUNNER_TEMP/php-mirror-ssh/key"
+          gh api meta --jq '.ssh_keys[] | "github.com " + .' > "$RUNNER_TEMP/php-mirror-ssh/known_hosts"
+          echo "GIT_SSH_COMMAND=ssh -i $RUNNER_TEMP/php-mirror-ssh/key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$RUNNER_TEMP/php-mirror-ssh/known_hosts" >> "$GITHUB_ENV"
+      - name: Split and push the Composer package
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$RELEASE_TAG" ]; then
+            latest=$(gh api repos/nickwelsh/formbraid/commits/main --jq .sha)
+            test "$(git rev-parse HEAD)" = "$latest"
+            destination=refs/heads/main
+          else
+            git check-ref-format "refs/tags/$RELEASE_TAG"
+            destination="refs/tags/$RELEASE_TAG"
+          fi
+          split=$(git subtree split --prefix=packages/laravel HEAD)
+          git push git@github.com:formbraid/laravel.git "$split:$destination"
+      - name: Remove mirror credentials
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/php-mirror-ssh"

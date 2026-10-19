@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel;
+namespace Formbraid\Laravel;
 
 use BackedEnum;
 use InvalidArgumentException;

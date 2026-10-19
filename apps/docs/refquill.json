@@ -1,6 +1,6 @@
 {
     "$schema": "./node_modules/@nickwelsh/refquill-schema/config.schema.json",
-    "title": "Fieldwork API reference",
+    "title": "Formbraid API reference",
     "sourceRoot": "../..",
     "output": "generated/api.json",
     "inputs": [

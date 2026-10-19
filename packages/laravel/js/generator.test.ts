@@ -6,7 +6,7 @@ import { Cause, Effect, Exit, Fiber, FileSystem, Schedule, Schema, Sink, Stream 
 import { ChildProcessSpawner } from 'effect/process';
 import type { ChildProcess } from 'effect/process';
 import { NodeServices } from '@effect/platform-node';
-import type { GenerationContext, RegistryManifest } from '@fieldwork/generator';
+import type { GenerationContext, RegistryManifest } from '@formbraid/generator';
 import { exportPhp, laravel, LaravelParseError, LaravelProcessError } from './generator.js';
 import type { LaravelError } from './generator.js';
 
@@ -67,7 +67,7 @@ describe('native Laravel generator adapter', () => {
         expect(commands[0]).toMatchObject({
             _tag: 'StandardCommand',
             command: '/custom/php',
-            args: ['artisan', 'fieldwork:export', '--no-ansi', '--profile=settings'],
+            args: ['artisan', 'formbraid:export', '--no-ansi', '--profile=settings'],
             options: { cwd: '/workspace/app', stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' },
         });
     });
@@ -187,7 +187,7 @@ describe('native Laravel generator adapter', () => {
     it('preserves native spawn errors in its typed failure', async () => {
         expect.hasAssertions();
         const error = await Effect.runPromise(
-            exportPhp('/fieldwork/missing-php-executable', [], process.cwd()).pipe(
+            exportPhp('/formbraid/missing-php-executable', [], process.cwd()).pipe(
                 Effect.flip,
                 Effect.provide(NodeServices.layer),
             ),

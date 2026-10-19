@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { parseExtractionEffect } from '@fieldwork/core';
-import { defineConfig } from '@fieldwork/generator';
-import { exportPhp, laravel } from '@fieldwork/laravel/generator';
-import { react } from '@fieldwork/react/generator';
-import { inertia } from '@fieldwork/inertia/generator';
+import { parseExtractionEffect } from '@formbraid/core';
+import { defineConfig } from '@formbraid/generator';
+import { exportPhp, laravel } from '@formbraid/laravel/generator';
+import { react } from '@formbraid/react/generator';
+import { inertia } from '@formbraid/inertia/generator';
 import { Effect } from 'effect';
 
 // The standalone demo uses Laravel's extractor without booting an application.

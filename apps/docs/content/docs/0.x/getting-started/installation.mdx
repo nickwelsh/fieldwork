@@ -3,7 +3,7 @@ title: Installation
 description: Install the local packages and choose the parts your application needs.
 ---
 
-Fieldwork's packages are currently developed and consumed from this repository. They have not yet been published to npm or Packagist. Use workspace dependencies, local package archives, or a Composer path repository instead of assuming registry installation is available.
+Formbraid's packages are currently developed and consumed from this repository. They have not yet been published to npm or Packagist. Use workspace dependencies, local package archives, or a Composer path repository instead of assuming registry installation is available.
 
 ## Requirements
 
@@ -17,26 +17,26 @@ Fieldwork's packages are currently developed and consumed from this repository. 
 
 | Package                | Install for                                                            |
 | ---------------------- | ---------------------------------------------------------------------- |
-| `@fieldwork/core`      | Definitions, JSON contracts, validation, and headless sessions         |
-| `@fieldwork/react`     | React registries, contexts, bound fields, layouts, and groups          |
-| `@fieldwork/inertia`   | Inertia runtime submission and generator bindings                      |
-| `@fieldwork/generator` | The `fieldwork` CLI, inspection, and generation                        |
-| `@fieldwork/laravel`   | Node integration with the Laravel extractor and HTTP provider          |
-| `fieldwork/laravel`    | PHP metadata builders, extraction, configuration, and Artisan commands |
+| `@formbraid/core`      | Definitions, JSON contracts, validation, and headless sessions         |
+| `@formbraid/react`     | React registries, contexts, bound fields, layouts, and groups          |
+| `@formbraid/inertia`   | Inertia runtime submission and generator bindings                      |
+| `@formbraid/generator` | The `formbraid` CLI, inspection, and generation                        |
+| `@formbraid/laravel`   | Node integration with the Laravel extractor and HTTP provider          |
+| `formbraid/laravel`    | PHP metadata builders, extraction, configuration, and Artisan commands |
 
 The generator and Laravel JavaScript package normally belong in development dependencies. The core, React, and selected submission adapter belong in runtime dependencies. Install the adapter's `@inertiajs/core` peer in the consuming application.
 
 ## Build the repository
 
 ```sh
-git clone https://github.com/nickwelsh/fieldwork.git
-cd fieldwork
+git clone https://github.com/nickwelsh/formbraid.git
+cd formbraid
 vp install --frozen-lockfile
 composer install --working-dir=packages/laravel
 vp run build
 ```
 
-Within this workspace, use `workspace:*` for Fieldwork package dependencies. For an application outside the workspace, pack each required package after building and install those archives together, replacing any `workspace:` references through pnpm's packing process.
+Within this workspace, use `workspace:*` for Formbraid package dependencies. For an application outside the workspace, pack each required package after building and install those archives together, replacing any `workspace:` references through pnpm's packing process.
 
 ## Add the PHP package
 
@@ -44,18 +44,18 @@ In a Laravel application's `composer.json`, register the local checkout as a pat
 
 ```json
 {
-    "repositories": [{ "type": "path", "url": "../fieldwork/packages/laravel" }]
+    "repositories": [{ "type": "path", "url": "../formbraid/packages/laravel" }]
 }
 ```
 
 Then install and publish its configuration:
 
 ```sh
-composer require fieldwork/laravel:@dev
-php artisan vendor:publish --tag=fieldwork-config
+composer require formbraid/laravel:@dev
+php artisan vendor:publish --tag=formbraid-config
 ```
 
-Laravel discovers `FieldworkServiceProvider` automatically. Adjust the relative repository path for your directory structure. Commit your application's `config/fieldwork.php` and review its component mappings before generation.
+Laravel discovers `FormbraidServiceProvider` automatically. Adjust the relative repository path for your directory structure. Commit your application's `config/formbraid.php` and review its component mappings before generation.
 
 ## Try the bundled example
 

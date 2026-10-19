@@ -10,7 +10,7 @@ import type {
     SubmissionResult,
     UploadProgress,
     SessionOptions,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import type { ComponentType, FormHTMLAttributes, FunctionComponent, ReactNode } from 'react';
 import type { FormApi } from './form-api.js';
 

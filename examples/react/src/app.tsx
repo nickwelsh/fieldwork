@@ -1,4 +1,4 @@
-import type { SubmissionDriver } from '@fieldwork/core';
+import type { SubmissionDriver } from '@formbraid/core';
 import { Effect } from 'effect';
 import { useState } from 'react';
 import { Form } from './forms.js';
@@ -17,7 +17,7 @@ function ProfileExample() {
     };
     return (
         <main>
-            <h1>Fieldwork</h1>
+            <h1>Formbraid</h1>
             <p>Laravel rules, application fields, and one address input.</p>
             <Form form={update.form({ user: 42 })} submission={submission}>
                 {({ fields, components, groups }) => (

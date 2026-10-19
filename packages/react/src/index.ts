@@ -1,5 +1,5 @@
-export { createFieldwork } from './create-fieldwork.js';
-export type { FieldworkOptions } from './create-fieldwork.js';
+export { createFormbraid } from './create-formbraid.js';
+export type { FormbraidOptions } from './create-formbraid.js';
 export { useFieldContext, useFormContext } from './hooks.js';
 export { withFieldGroup } from './group.js';
 export type { FieldApi, FormApi, ReactFormState } from './form-api.js';

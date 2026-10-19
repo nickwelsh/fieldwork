@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel;
+namespace Formbraid\Laravel;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,7 +13,7 @@ use ReflectionNamedType;
 
 final class HttpOperationsCommand extends Command
 {
-    protected $signature = 'fieldwork:http';
+    protected $signature = 'formbraid:http';
 
     protected $description = 'Export HTTP operations associated with Laravel FormRequests';
 

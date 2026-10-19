@@ -5,9 +5,9 @@ import type {
     SubmissionCallback,
     SubmissionResult,
     FormDescriptorData,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import { Context, Effect, Schema, SchemaGetter } from 'effect';
-import { createFieldwork } from './create-fieldwork.js';
+import { createFormbraid } from './create-formbraid.js';
 import type { FieldProps } from './types.js';
 
 interface Values {
@@ -34,7 +34,7 @@ const definition = {
     },
     groups: {},
 } as const satisfies FormDefinition<Values>;
-const runtime = createFieldwork({ fieldComponents: { TextField }, formComponents: {} });
+const runtime = createFormbraid({ fieldComponents: { TextField }, formComponents: {} });
 const callback: SubmissionCallback<Values, number, 'offline'> = (values) => ({
     status: 'success',
     value: values.title.length,

@@ -4,11 +4,11 @@ description: Configure source drivers, component inspection, named actions, and 
 ---
 
 ```ts
-// fieldwork.config.ts
-import { defineConfig } from '@fieldwork/generator';
-import { laravel } from '@fieldwork/laravel/generator';
-import { react } from '@fieldwork/react/generator';
-import { inertia } from '@fieldwork/inertia/generator';
+// formbraid.config.ts
+import { defineConfig } from '@formbraid/generator';
+import { laravel } from '@formbraid/laravel/generator';
+import { react } from '@formbraid/react/generator';
+import { inertia } from '@formbraid/inertia/generator';
 
 const app = laravel();
 
@@ -23,9 +23,9 @@ export default defineConfig({
 });
 ```
 
-Paths resolve relative to the config file. React inspects the default-exported `createFieldwork` setup and its direct component registries and field groups without executing UI modules. Setup options and group declarations must be statically inspectable.
+Paths resolve relative to the config file. React inspects the default-exported `createFormbraid` setup and its direct component registries and field groups without executing UI modules. Setup options and group declarations must be statically inspectable.
 
-Request discovery and enum targets belong in `config/fieldwork.php`:
+Request discovery and enum targets belong in `config/formbraid.php`:
 
 ```php
 return [
@@ -45,9 +45,9 @@ return [
 Enum targets are a declarative array of class names or `null` to disable a registry. Paths follow the application's Composer PSR-4 mappings. The Laravel integration reads only this array and its PHP imports before booting Laravel, writes the enums, then extracts schemas. Config and requests can therefore reference generated enum cases on the first run. This uses no config closures and remains compatible with Laravel config caching. Clear cached config after changing backend discovery or mappings. `laravel({ root, profile: 'fixtures' })` selects a backend discovery profile; directories are defined only in PHP.
 
 ```sh
-fieldwork fields                 # enums only; useful for initial setup
-fieldwork generate               # enums, forms, and named route actions
-fieldwork generate --check       # CI drift check
+formbraid fields                 # enums only; useful for initial setup
+formbraid generate               # enums, forms, and named route actions
+formbraid generate --check       # CI drift check
 ```
 
 Routes whose controller/closure parameters reference a FormRequest generate named action modules. For `profile.update` with `/users/{user}`, use:

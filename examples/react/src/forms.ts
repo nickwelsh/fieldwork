@@ -1,9 +1,9 @@
-import { createFieldwork } from '@fieldwork/react';
+import { createFormbraid } from '@formbraid/react';
 import { fieldGroups } from './address-group.js';
 import { fieldComponents } from './field-components.js';
 import { formComponents } from './form-components.js';
 
-const fieldwork = createFieldwork({ fieldComponents, formComponents, fieldGroups });
+const formbraid = createFormbraid({ fieldComponents, formComponents, fieldGroups });
 
-export default fieldwork;
-export const { Form, useForm } = fieldwork;
+export default formbraid;
+export const { Form, useForm } = formbraid;

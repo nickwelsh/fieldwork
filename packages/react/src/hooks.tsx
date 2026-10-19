@@ -1,5 +1,5 @@
 /* oxlint-disable typescript/no-unsafe-type-assertion -- React contexts erase form and field generics at this single provider boundary. */
-import type { FormSession, FormState } from '@fieldwork/core';
+import type { FormSession, FormState } from '@formbraid/core';
 import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
 import type { FieldApi, FormApi } from './form-api.js';
 
@@ -45,7 +45,7 @@ export function useFormContext<
 >(): FormApi<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices> {
     const form = useContext(FormContext);
     if (form === null) {
-        throw new Error('useFormContext must be used inside a Fieldwork Form.');
+        throw new Error('useFormContext must be used inside a Formbraid Form.');
     }
     return form as unknown as FormApi<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>;
 }
@@ -53,7 +53,7 @@ export function useFormContext<
 export function useFieldContext<TValue = unknown, TInput = TValue>(): FieldApi<TValue, TInput> {
     const context = useContext(FieldContext);
     if (context === null) {
-        throw new Error('useFieldContext must be used inside a Fieldwork field.');
+        throw new Error('useFieldContext must be used inside a Formbraid field.');
     }
     const { session, name } = context;
     const selector = useMemo(() => () => session.getField(name), [session, name]);

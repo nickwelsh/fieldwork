@@ -1,6 +1,6 @@
 /* oxlint-disable typescript/no-unsafe-type-assertion -- Slot projection is a checked mapping from statically typed parent paths to local group values. */
-import { getValue, normalizePath } from '@fieldwork/core';
-import type { FieldPath, FieldPathInput, FieldPathValue, FormState } from '@fieldwork/core';
+import { getValue, normalizePath } from '@formbraid/core';
+import type { FieldPath, FieldPathInput, FieldPathValue, FormState } from '@formbraid/core';
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { FieldApi, FormApi } from './form-api.js';

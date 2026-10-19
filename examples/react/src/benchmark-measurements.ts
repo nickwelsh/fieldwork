@@ -1,5 +1,5 @@
-import { defineForm } from '@fieldwork/core';
-import type { FieldDefinition } from '@fieldwork/core';
+import { defineForm } from '@formbraid/core';
+import type { FieldDefinition } from '@formbraid/core';
 
 export const benchmarkSizes = [100, 1000, 5000] as const;
 export type BenchmarkSize = (typeof benchmarkSizes)[number];

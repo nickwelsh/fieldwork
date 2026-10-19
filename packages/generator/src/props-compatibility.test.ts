@@ -2,22 +2,22 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vite-plus/test';
-import type { Extraction, JsonValue } from '@fieldwork/core';
+import type { Extraction, JsonValue } from '@formbraid/core';
 import { emitReact } from './emit.js';
 import { inspectRegistries } from './inspect.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 
 async function configuredProps(type: string, value: JsonValue): Promise<boolean> {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'fieldwork-prop-types-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'formbraid-prop-types-'));
     try {
         await writeFile(
             path.join(root, 'forms.ts'),
             `
-function createFieldwork(options: unknown) { return options; }
+function createFormbraid(options: unknown) { return options; }
 type Recursive = { next?: Recursive };
 const Input = (props: { label: string; constraints: unknown; options: ${type} }) => null;
-export default createFieldwork({ fieldComponents: { Input }, formComponents: {} });
+export default createFormbraid({ fieldComponents: { Input }, formComponents: {} });
 `,
         );
         const extraction: Extraction = {

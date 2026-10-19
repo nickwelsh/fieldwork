@@ -6,7 +6,7 @@ description: Extract Laravel rules and customize labels, components, help text, 
 Install the local Composer package into a Laravel app using a Composer path repository. Laravel discovers its service provider automatically. Publish configuration with:
 
 ```sh
-php artisan vendor:publish --tag=fieldwork-config
+php artisan vendor:publish --tag=formbraid-config
 ```
 
 Map rule-inferred value types to your generated enum:
@@ -53,7 +53,7 @@ public function rules(): array
 The default label is the title-case version of the final named field segment: `first_name` becomes `First Name`, and `billing.city` becomes `City`.
 
 ```php
-use Fieldwork\Laravel\Field;
+use Formbraid\Laravel\Field;
 
 public function fields(): array
 {

@@ -1,4 +1,4 @@
-import type { SubmissionDriver, SubmissionResult } from '@fieldwork/core';
+import type { SubmissionDriver, SubmissionResult } from '@formbraid/core';
 import { router as defaultRouter } from '@inertiajs/core';
 import type { NavigationFailure, VisitOptions, VisitOutcome } from '@inertiajs/core';
 import { Deferred, Effect, Fiber } from 'effect';

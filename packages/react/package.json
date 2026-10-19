@@ -1,7 +1,17 @@
 {
-    "name": "@fieldwork/react",
+    "name": "@formbraid/react",
     "version": "0.1.0",
+    "description": "Typed React bindings and application-owned components for Formbraid.",
+    "homepage": "https://docs.nickwelsh.me/formbraid/",
+    "bugs": {
+        "url": "https://github.com/nickwelsh/formbraid/issues"
+    },
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nickwelsh/formbraid.git",
+        "directory": "packages/react"
+    },
     "files": [
         "dist"
     ],
@@ -16,22 +26,25 @@
             "import": "./dist/generator.js"
         }
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "vp pack"
     },
     "dependencies": {
-        "@fieldwork/core": "workspace:*",
+        "@formbraid/core": "workspace:*",
         "effect": "4.0.2"
     },
     "devDependencies": {
-        "@fieldwork/generator": "workspace:*"
+        "@formbraid/generator": "workspace:*"
     },
     "peerDependencies": {
-        "@fieldwork/generator": "^0.1.0",
+        "@formbraid/generator": "^0.1.0",
         "react": "^19.0.0"
     },
     "peerDependenciesMeta": {
-        "@fieldwork/generator": {
+        "@formbraid/generator": {
             "optional": true
         }
     }

@@ -6,10 +6,10 @@ import type {
     SubmissionDriver,
     SubmissionResult,
     UploadProgress,
-} from '@fieldwork/core';
+} from '@formbraid/core';
 import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react';
 import { Effect, Schema } from 'effect';
-import { createFieldwork } from './create-fieldwork.js';
+import { createFormbraid } from './create-formbraid.js';
 import { useFieldContext } from './hooks.js';
 import type { FieldProps } from './types.js';
 
@@ -56,7 +56,7 @@ function TextField({ label }: FieldProps<string>) {
 function SubmitButton() {
     return <button type="submit">Save</button>;
 }
-const fieldwork = createFieldwork({
+const formbraid = createFormbraid({
     fieldComponents: { TextField },
     formComponents: { SubmitButton },
 });
@@ -75,7 +75,7 @@ describe('producer form descriptors', () => {
             errors: { title: ['Already taken.'] },
         }));
         const descriptor: Descriptor = { version: 1, definition, submission: { submit } };
-        render(<fieldwork.Form form={descriptor} />);
+        render(<formbraid.Form form={descriptor} />);
         submitForm();
         await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('required'));
         expect(submit).not.toHaveBeenCalled();
@@ -95,12 +95,12 @@ describe('producer form descriptors', () => {
             defaultValues: { title: 'Original' },
             submission: { submit: first },
         };
-        const view = render(<fieldwork.Form form={descriptor} />);
+        const view = render(<formbraid.Form form={descriptor} />);
         const input = screen.getByRole('textbox');
         expect(input.getAttribute('value')).toBe('Original');
         fireEvent.change(input, { target: { value: 'Edited' } });
         view.rerender(
-            <fieldwork.Form
+            <formbraid.Form
                 form={{ ...descriptor, defaultValues: { title: 'Replacement' }, submission: { submit: latest } }}
             />,
         );
@@ -127,9 +127,9 @@ describe('producer form descriptors', () => {
             defaultValues: { title: 'Original' },
             submission: { submit },
         } as const;
-        const { result } = renderHook(() => fieldwork.useForm(descriptor));
+        const { result } = renderHook(() => formbraid.useForm(descriptor));
         const { current } = result;
-        render(<fieldwork.Form form={current} />);
+        render(<formbraid.Form form={current} />);
         const execution: { pending?: Promise<SubmissionResult<number, 'offline'>> } = {};
         act(() => {
             execution.pending = current.form.handleSubmit();
@@ -163,8 +163,8 @@ describe('producer form descriptors', () => {
                 },
             },
         };
-        const { result } = renderHook(() => fieldwork.useForm(descriptor, { onResult }));
-        render(<fieldwork.Form form={result.current} />);
+        const { result } = renderHook(() => formbraid.useForm(descriptor, { onResult }));
+        render(<formbraid.Form form={result.current} />);
         submitForm();
         await waitFor(() => expect(gate.signal).toBeDefined());
         act(() => result.current.cancel());
@@ -181,7 +181,7 @@ describe('producer form descriptors', () => {
     it('routes driver descriptors through the registry and lets explicit defaults override descriptor defaults', async () => {
         expect.hasAssertions();
         const submit = vi.fn<SubmissionDriver['submit']>(() => Effect.succeed({ status: 'success' as const }));
-        const configured = createFieldwork({
+        const configured = createFormbraid({
             fieldComponents: { TextField },
             formComponents: { SubmitButton },
             submissions: { http: { submit } },
@@ -216,7 +216,7 @@ describe('producer form descriptors', () => {
             defaultValues: { title: '42' },
             submission: { submit },
         };
-        render(<fieldwork.Form form={descriptor} onResult={onResult} onProgress={onProgress} />);
+        render(<formbraid.Form form={descriptor} onResult={onResult} onProgress={onProgress} />);
         submitForm();
         await waitFor(() => expect(onResult).toHaveBeenCalledWith({ status: 'failure', error: 'offline' }));
         expect(submit.mock.calls[0]?.[0]).toStrictEqual({ title: 42 });
@@ -233,7 +233,7 @@ describe('producer form descriptors', () => {
             defaultValues: { title: 'Valid' },
             submission: { submit: callback },
         };
-        render(<fieldwork.Form form={descriptor} submission={{ submit }} />);
+        render(<formbraid.Form form={descriptor} submission={{ submit }} />);
         submitForm();
         await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
         expect(callback).not.toHaveBeenCalled();
@@ -254,7 +254,7 @@ describe('producer form descriptors', () => {
                 },
             },
         };
-        render(<fieldwork.Form form={descriptor} onResult={onResult} />);
+        render(<formbraid.Form form={descriptor} onResult={onResult} />);
         submitForm();
         await waitFor(() => expect(onResult).toHaveBeenCalledWith({ status: 'defect', error }));
     });

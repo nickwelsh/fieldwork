@@ -1,4 +1,4 @@
 {
     "extends": "../../tsconfig.json",
-    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "fieldwork.config.ts"]
+    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "formbraid.config.ts"]
 }

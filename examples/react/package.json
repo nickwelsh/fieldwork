@@ -1,5 +1,5 @@
 {
-    "name": "@fieldwork/example-react",
+    "name": "@formbraid/example-react",
     "private": true,
     "type": "module",
     "scripts": {
@@ -7,11 +7,11 @@
         "build": "vp build"
     },
     "dependencies": {
-        "@fieldwork/core": "workspace:*",
-        "@fieldwork/generator": "workspace:*",
-        "@fieldwork/inertia": "workspace:*",
-        "@fieldwork/laravel": "workspace:*",
-        "@fieldwork/react": "workspace:*",
+        "@formbraid/core": "workspace:*",
+        "@formbraid/generator": "workspace:*",
+        "@formbraid/inertia": "workspace:*",
+        "@formbraid/laravel": "workspace:*",
+        "@formbraid/react": "workspace:*",
         "effect": "4.0.2",
         "react": "^19.2.0",
         "react-dom": "^19.2.0"

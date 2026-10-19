@@ -1,5 +1,5 @@
-import { pathSegments, resolveConstraints } from '@fieldwork/core';
-import type { FieldDefinition, FormDefinition, FormState, GroupDefinition } from '@fieldwork/core';
+import { pathSegments, resolveConstraints } from '@formbraid/core';
+import type { FieldDefinition, FormDefinition, FormState, GroupDefinition } from '@formbraid/core';
 import { createContext, createElement, useContext, useMemo } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import type { ComponentRegistry, LayoutBindings } from './types.js';
@@ -35,7 +35,7 @@ export const InstanceContext = createContext<RuntimeInstance | null>(null);
 function useInstance(): RuntimeInstance {
     const instance = useContext(InstanceContext);
     if (instance === null) {
-        throw new Error('A bound Fieldwork component must be rendered inside its Form.');
+        throw new Error('A bound Formbraid component must be rendered inside its Form.');
     }
     return instance;
 }
@@ -46,7 +46,7 @@ function registered(registry: ComponentRegistry, name: string): unknown {
 
 function renderComponent(component: unknown, props: Record<string, unknown>): ReactNode {
     if (typeof component !== 'function' && (typeof component !== 'object' || component === null)) {
-        throw new Error('The requested component is not registered with Fieldwork.');
+        throw new Error('The requested component is not registered with Formbraid.');
     }
     // Registry lookup is the single dynamic boundary; public bindings retain each component's exact props.
     return createElement(component as ComponentType<Record<string, unknown>>, props);

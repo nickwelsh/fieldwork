@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fieldwork\Laravel;
+namespace Formbraid\Laravel;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,21 +11,21 @@ use Symfony\Component\Finder\Finder;
 
 final class ExportCommand extends Command
 {
-    protected $signature = 'fieldwork:export {--profile= : Backend discovery profile}';
+    protected $signature = 'formbraid:export {--profile= : Backend discovery profile}';
 
-    protected $description = 'Export Laravel form definitions as the portable Fieldwork JSON contract';
+    protected $description = 'Export Laravel form definitions as the portable Formbraid JSON contract';
 
     public function handle(): int
     {
-        $config = config('fieldwork');
+        $config = config('formbraid');
         if (! is_array($config)) {
-            throw new \RuntimeException('Missing Fieldwork configuration.');
+            throw new \RuntimeException('Missing Formbraid configuration.');
         }
         $profile = $this->option('profile');
         if (is_string($profile) && $profile !== '') {
             $profiles = $config['profiles'] ?? [];
             if (! is_array($profiles) || ! isset($profiles[$profile]) || ! is_array($profiles[$profile])) {
-                throw new \RuntimeException("Unknown Fieldwork profile: {$profile}");
+                throw new \RuntimeException("Unknown Formbraid profile: {$profile}");
             }
             $config = array_replace($config, $profiles[$profile]);
         }
