@@ -1,6 +1,6 @@
 /* oxlint-disable eslint/new-cap -- Effect uses capitalized functional Schema constructors. */
 import { Effect, Schema } from 'effect';
-import type { HttpOperation, Extraction, JsonValue } from './contracts.js';
+import type { HttpOperation, Extraction, JsonValue, FormDescriptorData } from './contracts.js';
 
 export const JsonValueSchema = Schema.Json;
 export const JsonObjectSchema = Schema.JsonObject;
@@ -55,6 +55,13 @@ export const ExtractionSchema = Schema.Struct({
 const HttpMethodSchema = Schema.Literals(['get', 'post', 'put', 'patch', 'delete']);
 export const SubmissionTargetSchema = Schema.Struct({ url: Schema.String, method: HttpMethodSchema });
 export const SubmissionBindingSchema = Schema.Struct({ driver: Schema.String, binding: JsonValueSchema });
+/** Only the serializable named-driver branch crosses a JSON boundary. */
+export const FormDescriptorSchema = Schema.Struct({
+    version: Schema.Literal(1),
+    definition: FormMetadataSchema,
+    defaultValues: Schema.optionalKey(JsonObjectSchema),
+    submission: SubmissionBindingSchema,
+});
 export const HttpOperationSchema: Schema.Codec<HttpOperation> = Schema.Struct({
     uri: Schema.String,
     method: HttpMethodSchema,
@@ -77,6 +84,7 @@ const RecordSchema = Schema.Record(Schema.String, Schema.Unknown);
 export const isRecord = Schema.is(RecordSchema);
 export const isJsonValue = Schema.is(JsonValueSchema);
 const extractionJson = Schema.fromJsonString(ExtractionSchema);
+const descriptorJson = Schema.fromJsonString(FormDescriptorSchema);
 const jsonValueJson = Schema.fromJsonString(JsonValueSchema);
 const decodeOptions = { errors: 'all', onExcessProperty: 'error' } as const;
 
@@ -85,6 +93,13 @@ export const parseExtractionEffect: (json: string) => Effect.Effect<Extraction, 
     Schema.decodeUnknownEffect(extractionJson, decodeOptions);
 export const parseJsonValueEffect: (json: string) => Effect.Effect<JsonValue, Schema.SchemaError> =
     Schema.decodeUnknownEffect(jsonValueJson, decodeOptions);
+
+export const parseFormDescriptorEffect: (json: string) => Effect.Effect<FormDescriptorData, Schema.SchemaError> =
+    Schema.decodeUnknownEffect(descriptorJson, decodeOptions);
+
+export function parseFormDescriptor(json: string): FormDescriptorData {
+    return Effect.runSync(parseFormDescriptorEffect(json));
+}
 
 /** Synchronous compiler/API boundaries execute the same native decoder. */
 export function parseExtraction(json: string): Extraction {

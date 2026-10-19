@@ -21,6 +21,8 @@ import type {
     JsonValue,
     Schema,
     SubmissionDriver,
+    SubmissionCallback,
+    SubmissionCallbackContext,
     SubmissionResult,
     UploadProgress,
 } from './contracts.js';
@@ -143,10 +145,7 @@ export interface FormState<TValues extends object, TSuccess = void, TError = unk
     readonly isDirty: boolean;
     readonly submitCount: number;
 }
-export interface OperationContext {
-    readonly signal: AbortSignal;
-    readonly onProgress: (progress: UploadProgress) => void;
-}
+export type OperationContext = SubmissionCallbackContext;
 export type FormOperation<TOutput, TSuccess = void, TError = never, TServices = never> = (
     output: TOutput,
     context: OperationContext,
@@ -173,6 +172,7 @@ interface SessionOptionsBase<
     readonly defaultValues?: TValues;
     readonly schema?: Schema<TValues, TOutput, TSchemaServices>;
     readonly operation?: FormOperation<TOutput, TSuccess, TError, TServices>;
+    readonly submit?: SubmissionCallback<TOutput, TSuccess, TError>;
     readonly driver?: SubmissionDriver;
     readonly binding?: JsonValue;
     readonly onResult?: (result: SubmissionResult<NoInfer<TSuccess>, NoInfer<TError>>) => void;
@@ -188,8 +188,12 @@ export type SessionOptions<
     ([TSuccess] extends [ReturnType<() => void>]
         ? [unknown] extends [TError]
             ? { readonly operation?: FormOperation<TOutput, TSuccess, TError, TServices> }
-            : { readonly operation: FormOperation<TOutput, TSuccess, TError, TServices> }
-        : { readonly operation: FormOperation<TOutput, TSuccess, TError, TServices> }) &
+            :
+                  | { readonly operation: FormOperation<TOutput, TSuccess, TError, TServices> }
+                  | { readonly submit: SubmissionCallback<TOutput, TSuccess, TError> }
+        :
+              | { readonly operation: FormOperation<TOutput, TSuccess, TError, TServices> }
+              | { readonly submit: SubmissionCallback<TOutput, TSuccess, TError> }) &
     ([Exclude<TServices | TSchemaServices, Scope.Scope>] extends [never]
         ? { readonly run?: EffectRunner<Exclude<TServices | TSchemaServices, Scope.Scope>> }
         : { readonly run: EffectRunner<Exclude<TServices | TSchemaServices, Scope.Scope>> });
@@ -842,6 +846,10 @@ export function createFormSession<
                     onSuccess: (value) => ({ status: 'success', value }) as SubmissionResult<TSuccess, TError>,
                     onFailure: (error): SubmissionResult<TSuccess, TError> => ({ status: 'failure', error }),
                 });
+            }
+            const { submit } = capturedOptions;
+            if (submit !== undefined) {
+                return yield* Effect.promise(async () => await submit(validated.success as TOutput, context));
             }
             const { driver } = capturedOptions;
             if (driver !== undefined) {

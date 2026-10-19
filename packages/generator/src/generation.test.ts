@@ -5,8 +5,9 @@ import ts from 'typescript-api';
 import { Deferred, Effect, Result, Schema } from 'effect';
 import { NodeServices } from '@effect/platform-node';
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { definitionSchema, parseExtraction, parseExtractionEffect } from '@fieldwork/core';
+import { definitionSchema, parseExtraction, parseExtractionEffect, parseFormDescriptor } from '@fieldwork/core';
 import { UpdateProfileRequest } from '@fieldwork/example/generated/forms/UpdateProfileRequest.js';
+import { update } from '@fieldwork/example/generated/actions/profile.js';
 import type { Extraction, FieldDefinition, JsonValue } from '@fieldwork/core';
 import type { FieldworkConfig, GeneratedFile, RegistryManifest, TypeShape } from './contracts.js';
 import { emitReact, emitActions } from './emit.js';
@@ -765,6 +766,30 @@ export {nullableRead};
         } finally {
             await rm(root, { recursive: true, force: true });
         }
+    });
+
+    it('emits public descriptors whose driver bindings survive the portable JSON boundary', () => {
+        expect.hasAssertions();
+        const form = update.form({ user: 42 });
+        const data = parseFormDescriptor(JSON.stringify(form));
+        expect(data).toStrictEqual({
+            version: 1,
+            definition: sourceForm,
+            submission: { driver: 'web', binding: { kind: 'http', url: '/users/42', method: 'patch' } },
+        });
+        const actions = emitActions(
+            [
+                { name: 'profile.update', schema: sourceForm.id, parameters: [], binding: '{}', imports: [] },
+                { name: 'profile.create', schema: sourceForm.id, parameters: [], binding: '{}', imports: [] },
+            ],
+            extraction,
+            { ...context, submission: 'http' },
+        );
+        const { contents } = firstGenerated(actions);
+        expect(contents).toContain('satisfies FormDescriptor<UpdateProfileRequestValues');
+        expect(contents).toContain('version: 1 as const');
+        expect(contents.match(/import type \{ FormDescriptor \}/gu)).toHaveLength(1);
+        expect(contents).not.toContain('bindForm');
     });
 
     it('emits literal definitions, optional route parameters, and enum blank draft values', () => {

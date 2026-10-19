@@ -37,8 +37,8 @@ export function bindForm<
         unknown,
         unknown
     >,
->(definition: TDefinition, submission: SubmissionBinding): BoundForm<TDefinition> {
-    return { definition, submission };
+>(definition: TDefinition, submission: SubmissionBinding): BoundForm<TDefinition> & { readonly version: 1 } {
+    return { version: 1, definition, submission };
 }
 
 export function routeUrl(uri: string, parameters: Readonly<Record<string, string | number>>): string {

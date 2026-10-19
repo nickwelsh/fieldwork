@@ -101,6 +101,53 @@ export interface SubmissionDriver {
     readonly submit: (context: SubmissionContext) => Effect.Effect<SubmissionResult>;
 }
 
+/** Runtime context supplied to per-form callbacks after validation. */
+export interface SubmissionCallbackContext {
+    readonly signal: AbortSignal;
+    readonly onProgress: (progress: UploadProgress) => void;
+}
+
+/** Producers return an explicit outcome; Promise resolution alone is not success. */
+export type SubmissionCallback<TOutput, TSuccess = void, TError = unknown> = (
+    values: TOutput,
+    context: SubmissionCallbackContext,
+) => SubmissionResult<TSuccess, TError> | PromiseLike<SubmissionResult<TSuccess, TError>>;
+
+export interface CallbackSubmission<TOutput, TSuccess = void, TError = unknown> {
+    readonly submit: SubmissionCallback<TOutput, TSuccess, TError>;
+    readonly driver?: never;
+    readonly binding?: never;
+}
+
+export type FormSubmission<TOutput, TSuccess = void, TError = unknown> =
+    | SubmissionBinding
+    | CallbackSubmission<TOutput, TSuccess, TError>;
+
+/** Public producer contract. React owns the session; producers supply data and execution. */
+export interface FormDescriptor<
+    TValues extends object = object,
+    TFields extends Readonly<Record<string, FieldDefinition>> = Readonly<Record<string, FieldDefinition>>,
+    TGroups extends Readonly<Record<string, GroupDefinition>> = Readonly<Record<string, GroupDefinition>>,
+    TOutput = TValues,
+    TSuccess = void,
+    TError = unknown,
+    TSchemaServices = never,
+> {
+    readonly version: 1;
+    readonly definition: FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>;
+    readonly defaultValues?: TValues;
+    readonly submission: FormSubmission<TOutput, TSuccess, TError>;
+}
+
+/** JSON-only form descriptor for generators and external data boundaries. */
+export interface FormDescriptorData {
+    readonly version: 1;
+    readonly definition: Omit<FormDefinition<Record<string, JsonValue>>, 'schema'>;
+    readonly defaultValues?: Record<string, JsonValue>;
+    readonly submission: SubmissionBinding;
+}
+
+/** Legacy driver binding shape; new producers should use FormDescriptor. */
 export interface BoundForm<
     TDefinition extends FormDefinition<
         object,
@@ -115,6 +162,7 @@ export interface BoundForm<
 }
 
 export interface SubmissionBinding {
+    readonly submit?: never;
     readonly driver: string;
     readonly binding: JsonValue;
 }

@@ -3,6 +3,8 @@ import type {
     Constraints,
     FieldDefinition,
     FormDefinition,
+    FormDescriptor,
+    FormOperation,
     GroupDefinition,
     SubmissionDriver,
     SubmissionResult,
@@ -50,7 +52,8 @@ export type FormOptions<
     TError = unknown,
     TServices = never,
     TSchemaServices = never,
-> = Pick<SessionOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>, 'operation' | 'run'> & {
+> = Pick<SessionOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>, 'run'> & {
+    readonly operation?: FormOperation<TOutput, TSuccess, TError, TServices>;
     readonly defaultValues?: TValues;
     readonly submission?: SubmissionDriver;
     readonly onResult?: (result: SubmissionResult<NoInfer<TSuccess>, NoInfer<TError>>) => void;
@@ -78,11 +81,14 @@ export interface UseForm {
         const TFields extends Readonly<Record<string, FieldDefinition>>,
         const TGroups extends Readonly<Record<string, GroupDefinition>>,
         TOutput = TValues,
+        TSuccess = void,
+        TError = unknown,
     >(
         input:
             | FormDefinition<TValues, TFields, TGroups, TOutput>
-            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput>>,
-    ): FormInstance<TValues, TFields, TGroups, TOutput>;
+            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput>>
+            | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError>,
+    ): FormInstance<TValues, TFields, TGroups, TOutput, TSuccess, TError>;
     <
         TValues extends object,
         const TFields extends Readonly<Record<string, FieldDefinition>>,
@@ -95,7 +101,8 @@ export interface UseForm {
     >(
         input:
             | FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>
-            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>,
+            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>
+            | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError, TSchemaServices>,
         options: FormOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>,
     ): FormInstance<TValues, TFields, TGroups, TOutput, TSuccess, TError, TServices, TSchemaServices>;
 }
@@ -162,7 +169,7 @@ export type FormProps<
     TError = unknown,
     TServices = never,
     TSchemaServices = never,
-> = Omit<FormHTMLAttributes<HTMLFormElement>, 'children' | 'onSubmit' | 'defaultValue'> & {
+> = Omit<FormHTMLAttributes<HTMLFormElement>, 'children' | 'onSubmit' | 'onProgress' | 'defaultValue'> & {
     readonly children?: (
         bindings: LayoutBindings<TFields, TGroups, TFieldComponents, TComponents, TGroupComponents>,
     ) => ReactNode;
@@ -170,6 +177,7 @@ export type FormProps<
         | (FormOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices> & {
               readonly form:
                   | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>
+                  | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError, TSchemaServices>
                   | FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>;
           })
         | ({

@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { Effect, Schema } from 'effect';
-import { isJsonValue, parseExtraction, parseExtractionEffect, parseJsonValueEffect } from './parse.js';
+import {
+    isJsonValue,
+    parseExtraction,
+    parseExtractionEffect,
+    parseJsonValueEffect,
+    parseFormDescriptor,
+    parseFormDescriptorEffect,
+} from './parse.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 
@@ -29,6 +36,29 @@ const extraction = {
 } as const;
 
 describe('native metadata decoding', () => {
+    it('decodes versioned third-party descriptors without a generator or runtime schema', () => {
+        expect.hasAssertions();
+        const descriptor = {
+            version: 1,
+            definition: extraction.forms[0],
+            defaultValues: { name: 'Nick', preferences: { enabled: true } },
+            submission: { driver: 'http', binding: { url: '/profile', method: 'patch' } },
+        };
+        const json = JSON.stringify(descriptor);
+        expect(parseFormDescriptor(json)).toStrictEqual(descriptor);
+        expect(Effect.runSync(parseFormDescriptorEffect(json))).toStrictEqual(descriptor);
+        for (const invalid of [
+            { ...descriptor, version: 2 },
+            { ...descriptor, defaultValues: [] },
+            { ...descriptor, submission: { ...descriptor.submission, submit: 'callback' } },
+            { ...descriptor, definition: { ...descriptor.definition, schema: {} } },
+        ]) {
+            const invalidJson = JSON.stringify(invalid);
+            const error = Effect.runSync(Effect.flip(parseFormDescriptorEffect(invalidJson)));
+            expect(Schema.isSchemaError(error)).toBe(true);
+        }
+    });
+
     it('shares the native decoder at synchronous and Effect boundaries', () => {
         expect.hasAssertions();
         const json = JSON.stringify(extraction);

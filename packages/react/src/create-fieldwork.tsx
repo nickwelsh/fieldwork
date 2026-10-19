@@ -3,6 +3,7 @@ import type {
     BoundForm,
     FieldDefinition,
     FormDefinition,
+    FormDescriptor,
     GroupDefinition,
     SessionOptions,
     SubmissionDriver,
@@ -23,6 +24,68 @@ function notify<T>(callback: (value: T) => void, value: T): void {
     } catch (error) {
         globalThis.reportError(error);
     }
+}
+
+function descriptorDriver(
+    descriptor: {
+        readonly version?: unknown;
+        readonly submission: { readonly driver?: unknown; readonly submit?: unknown };
+    },
+    drivers: Readonly<Record<string, SubmissionDriver>> | undefined,
+): SubmissionDriver | undefined {
+    if (descriptor.version !== undefined && descriptor.version !== 1) {
+        throw new Error('Unsupported Fieldwork form descriptor version.');
+    }
+    const { driver, submit } = descriptor.submission;
+    if (submit !== undefined && driver !== undefined) {
+        throw new Error('A form submission must provide either a driver or a callback.');
+    }
+    if (typeof driver !== 'string' || drivers === undefined || !Object.hasOwn(drivers, driver)) {
+        return undefined;
+    }
+    return drivers[driver];
+}
+
+function resolveForm<
+    TValues extends object,
+    TFields extends Readonly<Record<string, FieldDefinition>>,
+    TGroups extends Readonly<Record<string, GroupDefinition>>,
+    TOutput,
+    TSuccess,
+    TError,
+    TServices,
+    TSchemaServices,
+>(
+    input:
+        | FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>
+        | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>
+        | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError, TSchemaServices>,
+    options: Partial<FormOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>>,
+    drivers: Readonly<Record<string, SubmissionDriver>> | undefined,
+): SessionOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices> & {
+    readonly definition: FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>;
+} {
+    const bound = 'definition' in input ? input : undefined;
+    const definition = 'definition' in input ? input.definition : input;
+    const submission = bound?.submission;
+    const registeredDriver = bound === undefined ? undefined : descriptorDriver(bound, drivers);
+    const driver = options.submission ?? registeredDriver;
+    const defaults =
+        options.defaultValues ?? (bound !== undefined && 'defaultValues' in bound ? bound.defaultValues : undefined);
+    // Explicit per-form executors replace the descriptor's submission strategy.
+    const submit = options.operation === undefined && options.submission === undefined ? submission?.submit : undefined;
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Public options retain the conditional runner requirement; rebuilding optional keys preserves it.
+    return {
+        definition,
+        ...(defaults === undefined ? {} : { defaultValues: defaults }),
+        ...(options.operation === undefined ? {} : { operation: options.operation }),
+        ...(submit === undefined ? {} : { submit }),
+        ...(options.run === undefined ? {} : { run: options.run }),
+        ...(submission?.binding === undefined ? {} : { binding: submission.binding }),
+        ...(driver === undefined ? {} : { driver }),
+    } as SessionOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices> & {
+        readonly definition: FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>;
+    };
 }
 
 export interface FieldworkOptions<
@@ -63,27 +126,12 @@ export function createFieldwork<
     >(
         input:
             | FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>
-            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>,
+            | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>
+            | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError, TSchemaServices>,
         options: Partial<FormOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>> = {},
     ): FormInstance<TValues, TFields, TGroups, TOutput, TSuccess, TError, TServices, TSchemaServices> {
-        const bound = 'definition' in input ? input : undefined;
-        const definition = 'definition' in input ? input.definition : input;
-        const registeredDriver =
-            bound === undefined ||
-            config.submissions === undefined ||
-            !Object.hasOwn(config.submissions, bound.submission.driver)
-                ? undefined
-                : config.submissions[bound.submission.driver];
-        const driver = options.submission ?? registeredDriver;
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- FormOptions retains the conditional runner requirement; rebuilding its optional keys preserves it.
-        const sessionOptions = {
-            definition,
-            ...(options.defaultValues === undefined ? {} : { defaultValues: options.defaultValues }),
-            ...(options.operation === undefined ? {} : { operation: options.operation }),
-            ...(options.run === undefined ? {} : { run: options.run }),
-            ...(bound === undefined ? {} : { binding: bound.submission.binding }),
-            ...(driver === undefined ? {} : { driver }),
-        } as SessionOptions<TValues, TOutput, TSuccess, TError, TServices, TSchemaServices>;
+        const sessionOptions = resolveForm(input, options, config.submissions);
+        const { definition } = sessionOptions;
         // oxlint-disable-next-line react/hook-use-state -- Sessions are constructed once; their own subscriptions publish state.
         const [session] = useState(() => createFormSession(sessionOptions));
         const lifetime = useRef({ mounted: false, options });
@@ -273,7 +321,8 @@ export function createFieldwork<
         > & {
             readonly form:
                 | FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>
-                | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>;
+                | BoundForm<FormDefinition<TValues, TFields, TGroups, TOutput, TSchemaServices>>
+                | FormDescriptor<TValues, TFields, TGroups, TOutput, TSuccess, TError, TSchemaServices>;
         },
     ): ReactNode {
         const instance = useForm(props.form, props);
