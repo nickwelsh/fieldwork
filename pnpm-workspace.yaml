@@ -4,7 +4,7 @@ packages:
   - 'examples/react'
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.3.0
-  vite-plus: 0.3.0
+  vite-plus: 1.1.0
 overrides:
   vite@*: 'catalog:'
   tinypool@<2.1.2: ^2.1.2
