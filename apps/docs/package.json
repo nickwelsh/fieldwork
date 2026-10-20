@@ -13,7 +13,7 @@
         "deploy": "cf deploy --prebuilt --mode production"
     },
     "dependencies": {
-        "@nickwelsh/docs-base": "1.0.0",
+        "@nickwelsh/docs-base": "1.0.1",
         "fumadocs-core": "16.17.5",
         "fumadocs-mdx": "15.4.7",
         "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.5",

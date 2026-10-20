@@ -18,7 +18,7 @@ overrides:
   tinypool@<2.1.2: ^2.1.2
 
 patchedDependencies:
-  '@nickwelsh/docs-base@1.0.0': 041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f
+  '@nickwelsh/docs-base@1.0.1': 041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f
   '@nickwelsh/refquill@0.1.0': 883b8def1981d8ccbbe10461d4112318f881af98e4ed1580aee5073334f9d4b5
   waku@1.0.0-rc.3: f016f2e3d6c13cad1c3990034d24a0d9e68b880c5bb81370e4044af5aa596212
 
@@ -90,8 +90,8 @@ importers:
   apps/docs:
     dependencies:
       '@nickwelsh/docs-base':
-        specifier: 1.0.0
-        version: 1.0.0(patch_hash=041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f)(62a1bfb34e253ed22b872da978e249be)
+        specifier: 1.0.1
+        version: 1.0.1(patch_hash=041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f)(62a1bfb34e253ed22b872da978e249be)
       fumadocs-core:
         specifier: 16.17.5
         version: 16.17.5(@mdx-js/mdx@3.1.1(supports-color@10.2.2))(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.3.0)(lucide-react@1.59.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)(waku@1.0.0-rc.3(patch_hash=f016f2e3d6c13cad1c3990034d24a0d9e68b880c5bb81370e4044af5aa596212)(@types/node@24.19.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.1(react@19.3.1))(react-server-dom-webpack@19.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(webpack@5.112.0(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.5(@types/node@24.19.0))))(react@19.3.1)(terser@5.51.2)(tsx@4.23.15)(typescript@7.0.2)(yaml@2.9.1))(zod@4.6.7)
@@ -1016,8 +1016,8 @@ packages:
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
 
-  '@nickwelsh/docs-base@1.0.0':
-    resolution: {integrity: sha512-BFoz0iZy8d1zm5KfAQJlAY0JU7qIQCGiMBub8hYH+7C7HghUP2dkoRq/LyZ0DGL+EvtiPMHjuoqRN9HieM/p8w==}
+  '@nickwelsh/docs-base@1.0.1':
+    resolution: {integrity: sha512-YIoNmoYNjmFxyB+GeTdH8Xj/3ZPSCIUy0guCns1kER6S2FrH+myLpsI/sZVaViu/rInTkTsLlRavHxAzXgkShg==}
     engines: {node: '>=22.18.0'}
     hasBin: true
     peerDependencies:
@@ -5234,7 +5234,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nickwelsh/docs-base@1.0.0(patch_hash=041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f)(62a1bfb34e253ed22b872da978e249be)':
+  '@nickwelsh/docs-base@1.0.1(patch_hash=041498279c1e2c490b3f9e3725724c4249289e6c068b1f24d48044960b8d6e9f)(62a1bfb34e253ed22b872da978e249be)':
     dependencies:
       '@babel/parser': 8.0.7
       '@base-ui/react': 1.9.0(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
